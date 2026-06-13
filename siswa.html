@@ -44,14 +44,16 @@
   <div class="container">
     <h2>Data Siswa</h2>
 
-    <div class="toolbar">
-      <label for="filter-kelas">Filter:</label>
-      <select id="filter-kelas">
-        <option value="Semua">Semua</option>
-      </select>
-      <button class="btn-blue">Tambah Siswa</button>
-      <button class="btn-green">Unduh Excel</button>
-    </div>
+<div class="toolbar">
+  <label for="filter-pangkalan">Filter Pangkalan:</label>
+  <select id="filter-pangkalan">
+    <option value="ALL">ALL</option>
+    <option value="Turalak">Turalak (TRK)</option>
+    <option value="KelasJauh">Kelas Jauh (≠ TRK)</option>
+  </select>
+  <button class="btn-blue">Tambah Siswa</button>
+  <button class="btn-green">Unduh Excel</button>
+</div>
 
     <div id="data-container"></div>
   </div>
@@ -119,7 +121,7 @@
                     <td>${s.Alamat}</td>
                     <td>${s['Tempat Lahir'] || ''}</td>
                     <td>${s['Tanggal Lahir'] || ''}</td>
-                    <td>${s.Pangkalan || ''}</td>
+                    <td>${s['Pangkalan'] || ''}</td>
                     <td><button class="btn-yellow">Koreksi Data</button></td>
                   </tr>`).join('')}
               </tbody>
