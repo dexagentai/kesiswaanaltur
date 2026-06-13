@@ -17,17 +17,61 @@
 
   <div class="container">
     <h2>Data Siswa</h2>
-    <table>
+    <table id="tabel-siswa">
       <thead>
-        <tr><th>Nama</th><th>Kelas</th><th>Jurusan</th><th>Aksi</th></tr>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>NISN</th>
+          <th>Jenis Kelamin</th>
+          <th>Kelas</th>
+          <th>Alamat</th>
+        </tr>
       </thead>
       <tbody>
-        <tr><td>Budi</td><td>X-TKJ</td><td>TKJ</td><td>Edit | Hapus</td></tr>
-        <tr><td>Siti</td><td>XI-DKV</td><td>DKV</td><td>Edit | Hapus</td></tr>
+        <!-- Data dari Supabase akan muncul di sini -->
       </tbody>
     </table>
   </div>
 
   <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
+
+  <!-- Script koneksi Supabase -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
+    const supabaseKey = 'sb_publishable_t0IS5hbjCKlDep1p0bxwHw_wRbCrolm'
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    async function loadData() {
+      const { data, error } = await supabase
+        .from('siswa')
+        .select('*')
+        .order('nama', { ascending: true })
+
+      if (error) {
+        console.error(error)
+        return
+      }
+
+      const tbody = document.querySelector('#tabel-siswa tbody')
+      tbody.innerHTML = ''
+      data.forEach((s, i) => {
+        const row = `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${s.nama}</td>
+            <td>${s.nisn}</td>
+            <td>${s.jk}</td>
+            <td>${s.kelas}</td>
+            <td>${s.alamat}</td>
+          </tr>`
+        tbody.insertAdjacentHTML('beforeend', row)
+      })
+    }
+
+    loadData()
+  </script>
 </body>
 </html>
