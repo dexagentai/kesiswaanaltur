@@ -72,11 +72,13 @@
       const { data, error } = await supabase
         .from('siswa.csv')
         .select('*')
-        .order('Kelas/jurusan', { ascending: true })
+        .order('"Kelas/jurusan"', { ascending: true }) // pakai tanda kutip ganda
         .order('Nama', { ascending: true })
 
       if (error) {
         console.error('Error ambil data:', error)
+        const container = document.getElementById('data-container')
+        container.innerHTML = `<p style="color:red;">Gagal ambil data dari Supabase: ${error.message}</p>`
         return
       }
 
