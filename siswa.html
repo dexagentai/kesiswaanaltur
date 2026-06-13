@@ -5,9 +5,7 @@
   <title>Data Siswa</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .toolbar {
-      margin-bottom: 15px;
-    }
+    .toolbar { margin-bottom: 15px; }
     .toolbar select, .toolbar button {
       margin-right: 10px;
       padding: 6px 10px;
@@ -77,8 +75,8 @@
 
       if (error) {
         console.error('Error ambil data:', error)
-        const container = document.getElementById('data-container')
-        container.innerHTML = `<p style="color:red;">Gagal ambil data dari Supabase: ${error.message}</p>`
+        document.getElementById('data-container').innerHTML =
+          `<p style="color:red;">Gagal ambil data dari Supabase: ${error.message}</p>`
         return
       }
 
@@ -93,7 +91,7 @@
         grouped[kelas].push(s)
       })
 
-      // Fungsi render tabel per kelas dengan filter pangkalan
+      // Render tabel per kelas dengan filter pangkalan
       function renderTables(filter) {
         container.innerHTML = ''
         Object.keys(grouped).forEach(kelas => {
@@ -103,7 +101,7 @@
             filteredData = grouped[kelas].filter(s => s.pangkalan === 'TRK')
           } else if (filter === 'KelasJauh') {
             filteredData = grouped[kelas].filter(s => s.pangkalan !== 'TRK')
-          } // ALL → tidak difilter
+          }
 
           if (filteredData.length === 0) return
 
@@ -129,7 +127,11 @@
                       <td>${s['Tempat Lahir'] || ''}</td>
                       <td>${s['Tanggal Lahir'] || ''}</td>
                       <td>${s.pangkalan || ''}</td>
-                      <td><button class="btn-yellow" onclick="bukaKoreksi('${s.id}')">Koreksi Data</button></td>
+                      <td>
+                        <button class="btn-yellow" onclick="bukaKoreksi('${s.id}')">
+                          Koreksi Data
+                        </button>
+                      </td>
                     </tr>`).join('')}
                 </tbody>
               </table>
@@ -138,19 +140,15 @@
         })
       }
 
-      // Render awal (ALL)
+      // Render awal
       renderTables('ALL')
-
-      // Event filter
-      filterSelect.addEventListener('change', () => {
-        renderTables(filterSelect.value)
-      })
+      filterSelect.onchange = () => renderTables(filterSelect.value)
     }
 
     // Panggil pertama kali
     loadData()
 
-    // Realtime subscription
+    // Realtime subscription: auto update kalau ada perubahan
     supabase
       .channel('siswa-changes')
       .on(
@@ -158,7 +156,7 @@
         { event: '*', schema: 'public', table: 'siswa.csv' },
         payload => {
           console.log('Perubahan data:', payload)
-          loadData() // reload data setiap ada perubahan
+          loadData()
         }
       )
       .subscribe()
