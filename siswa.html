@@ -88,7 +88,7 @@
       // Kelompokkan data berdasarkan kelas/jurusan
       const grouped = {}
       data.forEach(s => {
-        const kelas = s['Kelas/jurusan']
+        const kelas = s['Kelas_jurusan']
         if (!grouped[kelas]) grouped[kelas] = []
         grouped[kelas].push(s)
       })
