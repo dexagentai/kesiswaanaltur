@@ -72,7 +72,7 @@
       const { data, error } = await supabase
         .from('siswa.csv')
         .select('*')
-        .order('"Kelas/jurusan"', { ascending: true }) // pakai tanda kutip ganda
+        .order('Kelas_jurusan', { ascending: true }) // pakai tanda kutip ganda
         .order('Nama', { ascending: true })
 
       if (error) {
