@@ -4,6 +4,32 @@
   <meta charset="UTF-8">
   <title>Data Siswa</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .toolbar {
+      margin-bottom: 15px;
+    }
+    .toolbar select, .toolbar button {
+      margin-right: 10px;
+      padding: 6px 10px;
+    }
+    .kelas-header {
+      background-color: #0099ff;
+      color: white;
+      padding: 6px;
+      margin-top: 20px;
+    }
+    .tabel-siswa {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .tabel-siswa th, .tabel-siswa td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: left;
+    }
+    .btn-yellow { background: #ffc107; border: none; padding: 4px 8px; cursor: pointer; }
+  </style>
 </head>
 <body>
   <nav>
@@ -17,21 +43,17 @@
 
   <div class="container">
     <h2>Data Siswa</h2>
-    <table id="tabel-siswa">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Nama</th>
-          <th>NISN</th>
-          <th>Jenis Kelamin</th>
-          <th>Kelas</th>
-          <th>Alamat</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Data dari Supabase akan muncul di sini -->
-      </tbody>
-    </table>
+
+    <div class="toolbar">
+      <label for="filter-kelas">Filter:</label>
+      <select id="filter-kelas">
+        <option value="Semua">Semua</option>
+      </select>
+      <button class="btn-blue">Tambah Siswa</button>
+      <button class="btn-green">Unduh Excel</button>
+    </div>
+
+    <div id="data-container"></div>
   </div>
 
   <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
@@ -46,29 +68,72 @@
 
     async function loadData() {
       const { data, error } = await supabase
-        .from('siswa.csv') // pastikan nama tabel sama persis
+        .from('siswa.csv')
         .select('*')
-        .order('Nama', { ascending: true }) // kolom huruf besar sesuai Supabase
+        .order('Nama', { ascending: true })
 
       if (error) {
         console.error('Error ambil data:', error)
         return
       }
 
-      const tbody = document.querySelector('#tabel-siswa tbody')
-      tbody.innerHTML = ''
+      const container = document.getElementById('data-container')
+      const filterSelect = document.getElementById('filter-kelas')
+      container.innerHTML = ''
 
-      data.forEach((s, i) => {
-        const row = `
-          <tr>
-            <td>${i + 1}</td>
-            <td>${s.Nama}</td>
-            <td>${s.NISN}</td>
-            <td>${s.JK}</td>
-            <td>${s['Kelas/jurusan']}</td>
-            <td>${s.Alamat}</td>
-          </tr>`
-        tbody.insertAdjacentHTML('beforeend', row)
+      // Kelompokkan data berdasarkan kelas/jurusan
+      const grouped = {}
+      data.forEach(s => {
+        const kelas = s['Kelas/jurusan']
+        if (!grouped[kelas]) {
+          grouped[kelas] = []
+          // Tambahkan opsi filter
+          const opt = document.createElement('option')
+          opt.value = kelas
+          opt.textContent = kelas
+          filterSelect.appendChild(opt)
+        }
+        grouped[kelas].push(s)
+      })
+
+      // Render tabel per kelas
+      Object.keys(grouped).forEach(kelas => {
+        const section = `
+          <div class="kelas-section" data-kelas="${kelas}">
+            <h3 class="kelas-header">${kelas}</h3>
+            <table class="tabel-siswa">
+              <thead>
+                <tr>
+                  <th>No</th><th>Nama</th><th>NISN</th><th>JK</th>
+                  <th>Alamat</th><th>Tempat Lahir</th><th>Tanggal Lahir</th>
+                  <th>Pangkalan</th><th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${grouped[kelas].map((s, i) => `
+                  <tr>
+                    <td>${i + 1}</td>
+                    <td>${s.Nama}</td>
+                    <td>${s.NISN}</td>
+                    <td>${s.JK}</td>
+                    <td>${s.Alamat}</td>
+                    <td>${s['Tempat Lahir'] || ''}</td>
+                    <td>${s['Tanggal Lahir'] || ''}</td>
+                    <td>${s.Pangkalan || ''}</td>
+                    <td><button class="btn-yellow">Koreksi Data</button></td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>`
+        container.insertAdjacentHTML('beforeend', section)
+      })
+
+      // Filter event
+      filterSelect.addEventListener('change', () => {
+        const val = filterSelect.value
+        document.querySelectorAll('.kelas-section').forEach(sec => {
+          sec.style.display = (val === 'Semua' || sec.dataset.kelas === val) ? 'block' : 'none'
+        })
       })
     }
 
