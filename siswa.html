@@ -46,26 +46,27 @@
 
     async function loadData() {
       const { data, error } = await supabase
-        .from('siswa.csv')
+        .from('siswa.csv') // pastikan nama tabel sama persis
         .select('*')
-        .order('nama', { ascending: true })
+        .order('Nama', { ascending: true }) // kolom huruf besar sesuai Supabase
 
       if (error) {
-        console.error(error)
+        console.error('Error ambil data:', error)
         return
       }
 
       const tbody = document.querySelector('#tabel-siswa tbody')
       tbody.innerHTML = ''
+
       data.forEach((s, i) => {
         const row = `
           <tr>
             <td>${i + 1}</td>
-            <td>${s.nama}</td>
-            <td>${s.nisn}</td>
-            <td>${s.jk}</td>
-            <td>${s.kelas}</td>
-            <td>${s.alamat}</td>
+            <td>${s.Nama}</td>
+            <td>${s.NISN}</td>
+            <td>${s.JK}</td>
+            <td>${s['Kelas/jurusan']}</td>
+            <td>${s.Alamat}</td>
           </tr>`
         tbody.insertAdjacentHTML('beforeend', row)
       })
