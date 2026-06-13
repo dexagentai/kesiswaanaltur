@@ -44,16 +44,16 @@
   <div class="container">
     <h2>Data Siswa</h2>
 
-<div class="toolbar">
-  <label for="filter-pangkalan">Filter Pangkalan:</label>
-  <select id="filter-pangkalan">
-    <option value="ALL">ALL</option>
-    <option value="Turalak">Turalak (TRK)</option>
-    <option value="KelasJauh">Kelas Jauh (≠ TRK)</option>
-  </select>
-  <button class="btn-blue">Tambah Siswa</button>
-  <button class="btn-green">Unduh Excel</button>
-</div>
+    <div class="toolbar">
+      <label for="filter-pangkalan">Filter Pangkalan:</label>
+      <select id="filter-pangkalan">
+        <option value="ALL">ALL</option>
+        <option value="Turalak">Turalak (TRK)</option>
+        <option value="KelasJauh">Kelas Jauh (≠ TRK)</option>
+      </select>
+      <button class="btn-blue">Tambah Siswa</button>
+      <button class="btn-green">Unduh Excel</button>
+    </div>
 
     <div id="data-container"></div>
   </div>
@@ -80,62 +80,51 @@
       }
 
       const container = document.getElementById('data-container')
-      const filterSelect = document.getElementById('filter-kelas')
-      container.innerHTML = ''
+      const filterSelect = document.getElementById('filter-pangkalan')
 
-      // Kelompokkan data berdasarkan kelas/jurusan
-      const grouped = {}
-      data.forEach(s => {
-        const kelas = s['Kelas/jurusan']
-        if (!grouped[kelas]) {
-          grouped[kelas] = []
-          // Tambahkan opsi filter
-          const opt = document.createElement('option')
-          opt.value = kelas
-          opt.textContent = kelas
-          filterSelect.appendChild(opt)
-        }
-        grouped[kelas].push(s)
-      })
-
-      // Render tabel per kelas
-      Object.keys(grouped).forEach(kelas => {
-        const section = `
-          <div class="kelas-section" data-kelas="${kelas}">
-            <h3 class="kelas-header">${kelas}</h3>
-            <table class="tabel-siswa">
-              <thead>
+      function renderTable(filteredData) {
+        container.innerHTML = `
+          <table class="tabel-siswa">
+            <thead>
+              <tr>
+                <th>No</th><th>Nama</th><th>NISN</th><th>JK</th>
+                <th>Kelas/Jurusan</th><th>Alamat</th><th>Pangkalan</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredData.map((s, i) => `
                 <tr>
-                  <th>No</th><th>Nama</th><th>NISN</th><th>JK</th>
-                  <th>Alamat</th><th>Tempat Lahir</th><th>Tanggal Lahir</th>
-                  <th>Pangkalan</th><th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${grouped[kelas].map((s, i) => `
-                  <tr>
-                    <td>${i + 1}</td>
-                    <td>${s.Nama}</td>
-                    <td>${s.NISN}</td>
-                    <td>${s.JK}</td>
-                    <td>${s.Alamat}</td>
-                    <td>${s['Tempat Lahir'] || ''}</td>
-                    <td>${s['Tanggal Lahir'] || ''}</td>
-                    <td>${s['Pangkalan'] || ''}</td>
-                    <td><button class="btn-yellow">Koreksi Data</button></td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>
-          </div>`
-        container.insertAdjacentHTML('beforeend', section)
-      })
+                  <td>${i + 1}</td>
+                  <td>${s.Nama}</td>
+                  <td>${s.NISN}</td>
+                  <td>${s.JK}</td>
+                  <td>${s['Kelas/jurusan']}</td>
+                  <td>${s.Alamat}</td>
+                  <td>${s.Pangkalan}</td>
+                  <td><button class="btn-yellow">Koreksi Data</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`
+      }
 
-      // Filter event
+      // Render awal (semua data)
+      renderTable(data)
+
+      // Event filter
       filterSelect.addEventListener('change', () => {
         const val = filterSelect.value
-        document.querySelectorAll('.kelas-section').forEach(sec => {
-          sec.style.display = (val === 'Semua' || sec.dataset.kelas === val) ? 'block' : 'none'
-        })
+        let filtered = data
+
+        if (val === 'Turalak') {
+          filtered = data.filter(s => s.Pangkalan === 'TRK')
+        } else if (val === 'KelasJauh') {
+          filtered = data.filter(s => s.Pangkalan !== 'TRK')
+        } else if (val === 'ALL') {
+          filtered = data // semua pangkalan
+        }
+
+        renderTable(filtered)
       })
     }
 
