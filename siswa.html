@@ -65,14 +65,14 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
     const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // anon key kamu
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' // anon key kamu
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     async function loadData() {
       const { data, error } = await supabase
         .from('siswa.csv')
         .select('*')
-        .order('Kelas_jurusan', { ascending: true }) // pakai tanda kutip ganda
+        .order('Kelas_jurusan', { ascending: true })
         .order('Nama', { ascending: true })
 
       if (error) {
@@ -88,7 +88,7 @@
       // Kelompokkan data berdasarkan kelas/jurusan
       const grouped = {}
       data.forEach(s => {
-        const kelas = s['Kelas_jurusan']
+        const kelas = s.Kelas_jurusan
         if (!grouped[kelas]) grouped[kelas] = []
         grouped[kelas].push(s)
       })
@@ -129,7 +129,7 @@
                       <td>${s['Tempat Lahir'] || ''}</td>
                       <td>${s['Tanggal Lahir'] || ''}</td>
                       <td>${s.pangkalan || ''}</td>
-                      <td><button class="btn-yellow">Koreksi Data</button></td>
+                      <td><button class="btn-yellow" onclick="bukaKoreksi('${s.id}')">Koreksi Data</button></td>
                     </tr>`).join('')}
                 </tbody>
               </table>
@@ -147,7 +147,26 @@
       })
     }
 
+    // Panggil pertama kali
     loadData()
+
+    // Realtime subscription
+    supabase
+      .channel('siswa-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'siswa.csv' },
+        payload => {
+          console.log('Perubahan data:', payload)
+          loadData() // reload data setiap ada perubahan
+        }
+      )
+      .subscribe()
+
+    // Fungsi buka koreksi
+    window.bukaKoreksi = function(id) {
+      window.location.href = `koreksi.html?id=${id}`
+    }
   </script>
 </body>
 </html>
