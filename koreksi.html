@@ -4,28 +4,24 @@
   <meta charset="UTF-8">
   <title>Koreksi Data Siswa</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    form { max-width: 600px; margin: auto; }
-    label { display: block; margin-top: 10px; }
-    input, textarea { width: 100%; padding: 6px; margin-top: 4px; }
-    button { margin-top: 15px; padding: 8px 12px; cursor: pointer; }
-    .btn-save { background: #28a745; color: white; border: none; }
-    .btn-cancel { background: #dc3545; color: white; border: none; margin-left: 10px; }
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    form { max-width: 500px; margin: auto; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+    button { margin-top: 15px; padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
   </style>
 </head>
 <body>
   <h2>Koreksi Data Siswa</h2>
   <form id="form-koreksi">
-    <label>Nama: <input type="text" id="Nama" name="Nama"></label>
-    <label>NISN: <input type="text" id="NISN" name="NISN" readonly></label>
-    <label>JK: <input type="text" id="JK" name="JK"></label>
-    <label>Kelas/Jurusan: <input type="text" id="Kelas_jurusan" name="Kelas_jurusan"></label>
-    <label>Alamat: <input type="text" id="Alamat" name="Alamat"></label>
-    <label>Tempat Lahir: <input type="text" id="TempatLahir" name="TempatLahir"></label>
-    <label>Tanggal Lahir: <input type="date" id="TanggalLahir" name="TanggalLahir"></label>
-    <label>Pangkalan: <input type="text" id="Pangkalan" name="Pangkalan"></label>
-    <button type="submit" class="btn-save">Simpan Koreksi</button>
-    <button type="button" class="btn-cancel" onclick="window.location.href='siswa.html'">Batal</button>
+    <label>Nama Siswa:</label>
+    <input type="text" id="Nama" name="Nama" placeholder="Masukkan nama siswa">
+
+    <label>Komentar Koreksi:</label>
+    <textarea id="Komentar" name="Komentar" rows="4" placeholder="Tuliskan koreksi atau komentar..."></textarea>
+
+    <button type="submit">Kirim Koreksi</button>
   </form>
 
   <script type="module">
@@ -35,58 +31,21 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // anon key kamu
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Ambil NISN dari URL (string, bukan angka)
-    const urlParams = new URLSearchParams(window.location.search)
-    const nisn = urlParams.get('nisn')
-
-    async function loadData() {
-      const { data, error } = await supabase
-        .from('siswa.csv')
-        .select('*')
-        .eq('NISN', nisn)   // cocokkan NISN sebagai string
-        .single()
-
-      if (error) {
-        alert('Gagal ambil data: ' + error.message)
-        return
-      }
-
-      // Isi form dengan data siswa
-      document.getElementById('Nama').value = data.Nama || ''
-      document.getElementById('NISN').value = data.NISN || ''
-      document.getElementById('JK').value = data.JK || ''
-      document.getElementById('Kelas_jurusan').value = data.Kelas_jurusan || ''
-      document.getElementById('Alamat').value = data.Alamat || ''
-      document.getElementById('TempatLahir').value = data['Tempat Lahir'] || ''
-      document.getElementById('TanggalLahir').value = data['Tanggal Lahir'] || ''
-      document.getElementById('Pangkalan').value = data.pangkalan || ''
-    }
-
-    loadData()
-
-    // Simpan koreksi
     document.getElementById('form-koreksi').addEventListener('submit', async (e) => {
       e.preventDefault()
-      const updates = {
-        Nama: document.getElementById('Nama').value,
-        JK: document.getElementById('JK').value,
-        Kelas_jurusan: document.getElementById('Kelas_jurusan').value,
-        Alamat: document.getElementById('Alamat').value,
-        'Tempat Lahir': document.getElementById('TempatLahir').value,
-        'Tanggal Lahir': document.getElementById('TanggalLahir').value,
-        pangkalan: document.getElementById('Pangkalan').value
-      }
+      const nama = document.getElementById('Nama').value
+      const komentar = document.getElementById('Komentar').value
 
+      // Simpan ke tabel komentar (buat tabel 'komentar' di Supabase)
       const { error } = await supabase
-        .from('siswa.csv')
-        .update(updates)
-        .eq('NISN', nisn)   // update berdasarkan NISN string
+        .from('komentar')
+        .insert([{ nama_siswa: nama, komentar: komentar }])
 
       if (error) {
-        alert('Gagal simpan koreksi: ' + error.message)
+        alert('Gagal kirim koreksi: ' + error.message)
       } else {
-        alert('Data berhasil dikoreksi!')
-        window.location.href = 'siswa.html'
+        alert('Koreksi berhasil dikirim!')
+        document.getElementById('form-koreksi').reset()
       }
     })
   </script>
