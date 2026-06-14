@@ -4,77 +4,21 @@
   <meta charset="UTF-8">
   <title>Data Siswa</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* ===== NAVBAR ===== */
-    nav {
-      background-color: #006400;
-      padding: 10px 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    nav ul {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin: 0;
-      padding: 0;
-    }
-    nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 15px;
-      transition: all 0.3s ease;
-    }
-    nav ul li a:hover {
-      color: #ffeb3b;
-      transform: scale(1.1);
-    }
-
-    /* ===== TOOLBAR ===== */
-    .toolbar { margin-bottom: 15px; }
-    .toolbar select, .toolbar button {
-      margin-right: 10px;
-      padding: 6px 10px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-blue { background: #007bff; color: white; }
-    .btn-green { background: #28a745; color: white; }
-    .btn-yellow { background: #ffc107; border: none; padding: 4px 8px; cursor: pointer; }
-
-    /* ===== TABEL ===== */
-    .kelas-header {
-      background-color: #0099ff;
-      color: white;
-      padding: 6px;
-      margin-top: 20px;
-    }
-    .tabel-siswa {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    .tabel-siswa th, .tabel-siswa td {
-      border: 1px solid #ccc;
-      padding: 6px;
-      text-align: left;
-    }
-    footer {
-      text-align: center;
-      margin-top: 30px;
-      color: #555;
-    }
-  </style>
+  <!-- Font Awesome untuk ikon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <!-- Navbar modern -->
   <nav>
+    <div class="logo">
+      <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
+      <span>SMK AL HUDA TURALAK</span>
+    </div>
     <ul>
-      <li><a href="index.html">Dashboard</a></li>
-      <li><a href="siswa.html">Data Siswa</a></li>
-      <li><a href="absensi.html">Template Absensi</a></li>
-      <li><a href="administrasi.html">Administrasi</a></li>
+      <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="siswa.html"><i class="fas fa-users"></i> Data Siswa</a></li>
+      <li><a href="absensi.html"><i class="fas fa-calendar-check"></i> Absensi</a></li>
+      <li><a href="administrasi.html"><i class="fas fa-folder-open"></i> Administrasi</a></li>
     </ul>
   </nav>
 
