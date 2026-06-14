@@ -1,76 +1,96 @@
+/* ===== Global ===== */
 body {
   font-family: Arial, sans-serif;
   background: #f9f9f9;
   margin: 0;
+  color: #333;
 }
 
-/* Navbar */
+/* ===== Navbar ===== */
 nav {
   position: fixed;
   top: 0;
   width: 100%;
-  background: #2f855a;
-  color: white;
-  padding: 10px;
+  background: #006400; /* hijau tua elegan */
+  padding: 12px 0;
   z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 nav ul {
   list-style: none;
   display: flex;
-  gap: 20px;
+  justify-content: center;
+  gap: 40px;
   margin: 0;
   padding: 0;
-  justify-content: center;
 }
 nav a {
   color: white;
   text-decoration: none;
   font-weight: bold;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 nav a:hover {
-  text-decoration: underline;
+  color: #ffeb3b; /* kuning cerah saat hover */
+  transform: scale(1.1);
 }
 
-/* Container */
+/* ===== Container ===== */
 .container {
-  padding: 80px 20px 20px; /* padding atas lebih besar karena navbar fixed */
+  padding: 90px 20px 20px; /* lebih besar karena navbar fixed */
 }
 
-/* Toolbar */
+/* ===== Toolbar ===== */
 .toolbar {
   margin-bottom: 15px;
 }
 .toolbar select,
 .toolbar button {
   margin-right: 10px;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 .btn-blue {
   background: #007bff;
   color: white;
 }
+.btn-blue:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
 .btn-green {
   background: #28a745;
   color: white;
+}
+.btn-green:hover {
+  background: #1e7e34;
+  transform: translateY(-2px);
 }
 .btn-yellow {
   background: #ffc107;
   color: black;
 }
+.btn-yellow:hover {
+  background: #e0a800;
+  transform: translateY(-2px);
+}
 
-/* Header kelas */
+/* ===== Header kelas ===== */
 .kelas-header {
   background-color: #0099ff;
   color: white;
-  padding: 6px;
+  padding: 8px;
   margin-top: 20px;
   border-radius: 4px;
+  font-weight: bold;
 }
 
-/* Tabel siswa */
+/* ===== Tabel siswa ===== */
 .tabel-siswa {
   width: 100%;
   border-collapse: collapse;
@@ -81,6 +101,7 @@ nav a:hover {
   border: 1px solid #ccc;
   padding: 8px;
   text-align: center;
+  font-size: 14px;
 }
 .tabel-siswa th {
   background: #c6f6d5;
@@ -88,12 +109,16 @@ nav a:hover {
 .tabel-siswa tbody tr:nth-child(even) {
   background: #f0fff4; /* zebra striping */
 }
+.tabel-siswa tbody tr:hover {
+  background: #e6f7ff; /* efek hover baris */
+}
 
-/* Footer */
+/* ===== Footer ===== */
 footer {
   background: #edf2f7;
   text-align: center;
-  padding: 10px;
+  padding: 12px;
   color: #666;
-  margin-top: 20px;
+  margin-top: 30px;
+  font-size: 13px;
 }
