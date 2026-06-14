@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Koreksi Data Siswa</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    form { max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 10px; }
+    input, textarea { width: 100%; padding: 6px; margin-top: 4px; }
+    button { margin-top: 15px; padding: 8px 12px; cursor: pointer; }
+    .btn-save { background: #28a745; color: white; border: none; }
+    .btn-cancel { background: #dc3545; color: white; border: none; margin-left: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Koreksi Data Siswa</h2>
+  <form id="form-koreksi">
+    <label>Nama: <input type="text" id="Nama" name="Nama"></label>
+    <label>NISN: <input type="text" id="NISN" name="NISN" readonly></label>
+    <label>JK: <input type="text" id="JK" name="JK"></label>
+    <label>Kelas/Jurusan: <input type="text" id="Kelas_jurusan" name="Kelas_jurusan"></label>
+    <label>Alamat: <input type="text" id="Alamat" name="Alamat"></label>
+    <label>Tempat Lahir: <input type="text" id="TempatLahir" name="TempatLahir"></label>
+    <label>Tanggal Lahir: <input type="date" id="TanggalLahir" name="TanggalLahir"></label>
+    <label>Pangkalan: <input type="text" id="Pangkalan" name="Pangkalan"></label>
+    <button type="submit" class="btn-save">Simpan Koreksi</button>
+    <button type="button" class="btn-cancel" onclick="window.location.href='siswa.html'">Batal</button>
+  </form>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+    const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' // anon key kamu
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Ambil NISN dari URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const nisn = urlParams.get('nisn')
+
+    async function loadData() {
+      const { data, error } = await supabase
+        .from('siswa.csv')
+        .select('*')
+        .eq('NISN', nisn)
+        .single()
+
+      if (error) {
+        alert('Gagal ambil data: ' + error.message)
+        return
+      }
+
+      // Isi form dengan data siswa
+      document.getElementById('Nama').value = data.Nama || ''
+      document.getElementById('NISN').value = data.NISN || ''
+      document.getElementById('JK').value = data.JK || ''
+      document.getElementById('Kelas_jurusan').value = data.Kelas_jurusan || ''
+      document.getElementById('Alamat').value = data.Alamat || ''
+      document.getElementById('TempatLahir').value = data['Tempat Lahir'] || ''
+      document.getElementById('TanggalLahir').value = data['Tanggal Lahir'] || ''
+      document.getElementById('Pangkalan').value = data.pangkalan || ''
+    }
+
+    loadData()
+
+    // Simpan koreksi
+    document.getElementById('form-koreksi').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const updates = {
+        Nama: document.getElementById('Nama').value,
+        JK: document.getElementById('JK').value,
+        Kelas_jurusan: document.getElementById('Kelas_jurusan').value,
+        Alamat: document.getElementById('Alamat').value,
+        'Tempat Lahir': document.getElementById('TempatLahir').value,
+        'Tanggal Lahir': document.getElementById('TanggalLahir').value,
+        pangkalan: document.getElementById('Pangkalan').value
+      }
+
+      const { error } = await supabase
+        .from('siswa.csv')
+        .update(updates)
+        .eq('NISN', nisn)
+
+      if (error) {
+        alert('Gagal simpan koreksi: ' + error.message)
+      } else {
+        alert('Data berhasil dikoreksi!')
+        window.location.href = 'siswa.html'
+      }
+    })
+  </script>
+</body>
+</html>
