@@ -68,7 +68,7 @@
 
     async function loadData() {
       const { data, error } = await supabase
-        .from('siswa.csv')
+        .from('siswa')   // gunakan nama tabel asli, bukan siswa.csv
         .select('*')
         .order('Kelas_jurusan', { ascending: true })
         .order('Nama', { ascending: true })
@@ -128,7 +128,7 @@
                       <td>${s['Tanggal Lahir'] || ''}</td>
                       <td>${s.pangkalan || ''}</td>
                       <td>
-                        <button class="btn-yellow" onclick="bukaKoreksi('${s.id}')">
+                        <button class="btn-yellow" onclick="bukaKoreksi('${s.NISN}')">
                           Koreksi Data
                         </button>
                       </td>
@@ -153,7 +153,7 @@
       .channel('siswa-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'siswa.csv' },
+        { event: '*', schema: 'public', table: 'siswa' }, // gunakan nama tabel asli
         payload => {
           console.log('Perubahan data:', payload)
           loadData()
@@ -162,8 +162,8 @@
       .subscribe()
 
     // Fungsi buka koreksi
-    window.bukaKoreksi = function(id) {
-      window.location.href = `koreksi.html?id=${id}`
+    window.bukaKoreksi = function(nisn) {
+      window.location.href = `koreksi.html?nisn=${nisn}`
     }
   </script>
 </body>
