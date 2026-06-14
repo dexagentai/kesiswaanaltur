@@ -35,57 +35,21 @@
       text-align: center;
       transition: transform 0.2s ease;
     }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .card h3 {
-      margin: 0;
-      color: #006400;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .card .value {
-      font-size: 22px;
-      font-weight: bold;
-      color: #006400;
-      margin: 8px 0;
-    }
-    .card i {
-      font-size: 22px;
-      color: #006400;
-    }
+    .card:hover { transform: translateY(-5px); }
+    .card h3 { margin: 0; color: #006400; font-size: 16px; font-weight: 600; }
+    .card .value { font-size: 22px; font-weight: bold; color: #006400; margin: 8px 0; }
+    .card i { font-size: 22px; color: #006400; }
 
     /* ===== Tabel Jurusan ===== */
-    .jurusan-section {
-      margin: 50px auto;
-      width: 90%;
-      text-align: center;
-    }
-    .jurusan-section h3 {
-      color: #006400;
-      margin-bottom: 5px;
-    }
-    .jurusan-section p {
-      color: #555;
-      font-size: 13px;
-    }
-    .tabel-jurusan {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
+    .jurusan-section { margin: 50px auto; width: 90%; text-align: center; }
+    .jurusan-section h3 { color: #006400; margin-bottom: 5px; }
+    .jurusan-section p { color: #555; font-size: 13px; }
+    .tabel-jurusan { width: 100%; border-collapse: collapse; margin-top: 15px; }
     .tabel-jurusan th, .tabel-jurusan td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
+      border: 1px solid #ccc; padding: 8px; text-align: center;
     }
-    .tabel-jurusan th {
-      background: #c6f6d5;
-      color: #006400;
-    }
-    .tabel-jurusan tbody tr:nth-child(even) {
-      background: #f0fff4;
-    }
+    .tabel-jurusan th { background: #c6f6d5; color: #006400; }
+    .tabel-jurusan tbody tr:nth-child(even) { background: #f0fff4; }
   </style>
 </head>
 <body>
@@ -106,7 +70,7 @@
   <!-- Dashboard Statistik -->
   <div class="dashboard">
     <h2>Dashboard Kesiswaan</h2>
-    <p>Sistem Data &Siswa TerintegrasiK</p>
+    <p>Sistem Data & Absensi SMK AL HUDA TURALAK</p>
     <hr style="width:80%; border:0; border-top:1px solid #ccc; margin:20px auto;">
     <div class="cards">
       <div class="card">
@@ -121,12 +85,12 @@
       </div>
       <div class="card">
         <h3>Jurusan</h3>
-        <div class="value" id="jurusan">6</div>
+        <div class="value" id="jurusan">0</div>
         <i class="fas fa-table"></i>
       </div>
       <div class="card">
         <h3>Total Kelas</h3>
-        <div class="value" id="total-kelas">19</div>
+        <div class="value" id="total-kelas">0</div>
         <i class="fas fa-book"></i>
       </div>
     </div>
@@ -143,6 +107,7 @@
           <th>Kelas X</th>
           <th>Kelas XI</th>
           <th>Kelas XII</th>
+          <th>Total</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -174,17 +139,18 @@
       const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
       const totalTRK = siswaTRK.length
 
-      // Jurusan dan kelas statis
-      const jurusan = 6
-      const totalKelas = 19
+      // Hitung jurusan unik & kelas unik
+      const jurusanSet = new Set(siswaTRK.map(s => s.Kelas_jurusan.split(' ')[1]))
+      const kelasSet = new Set(siswaTRK.map(s => s.Kelas_jurusan.split(' ')[0]))
+      const totalJurusan = jurusanSet.size
+      const totalKelas = kelasSet.size * totalJurusan // perkiraan total kelas
 
       // Tampilkan ke kartu
       document.getElementById('total-siswa').textContent = totalSiswa
       document.getElementById('siswa-trk').textContent = totalTRK
-      document.getElementById('jurusan').textContent = jurusan
+      document.getElementById('jurusan').textContent = totalJurusan
       document.getElementById('total-kelas').textContent = totalKelas
 
-      // Hitung jumlah siswa per jurusan dan kelas
       // Hitung jumlah siswa per jurusan dan kelas
       const jurusanList = ['LPS','MPLB','DKV','TKJ','TKRO','TF']
       const kelasList = ['X','XI','XII']
@@ -192,22 +158,27 @@
       tbody.innerHTML = ''
 
       jurusanList.forEach(j => {
-      const row = document.createElement('tr')
-      const tdJurusan = document.createElement('td')
-      tdJurusan.textContent = j
-      row.appendChild(tdJurusan)
+        const row = document.createElement('tr')
+        const tdJurusan = document.createElement('td')
+        tdJurusan.textContent = j
+        row.appendChild(tdJurusan)
 
+        let totalPerJurusan = 0
         kelasList.forEach(k => {
-        // cek langsung dari Kelas_jurusan, misalnya "XI TKJ"
-        const count = siswaTRK.filter(s => s.Kelas_jurusan.startsWith(k) && s.Kelas_jurusan.includes(j)).length
-        const td = document.createElement('td')
-    td.textContent = count
-    row.appendChild(td)
-  })
+          const count = siswaTRK.filter(s => 
+            s.Kelas_jurusan &&
+            s.Kelas_jurusan.startsWith(k) &&
+            s.Kelas_jurusan.includes(j)
+          ).length
+          totalPerJurusan += count
+          const td = document.createElement('td')
+          td.textContent = count
+          row.appendChild(td)
+        })
 
-  tbody.appendChild(row)
-})
-
+        const tdTotal = document.createElement('td')
+        tdTotal.textContent = totalPerJurusan
+        row.appendChild(tdTotal)
 
         tbody.appendChild(row)
       })
