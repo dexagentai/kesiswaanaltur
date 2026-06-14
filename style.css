@@ -11,29 +11,54 @@ nav {
   position: fixed;
   top: 0;
   width: 100%;
-  background: #006400; /* hijau tua elegan */
-  padding: 12px 0;
-  z-index: 1000;
+  background: #2f855a; /* hijau lembut */
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 1000;
 }
+
+/* Logo kiri */
+nav .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+nav .logo img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+nav .logo span {
+  font-weight: bold;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+
+/* Menu kanan */
 nav ul {
   list-style: none;
   display: flex;
-  justify-content: center;
-  gap: 40px;
+  gap: 25px;
   margin: 0;
   padding: 0;
 }
-nav a {
+nav ul li a {
   color: white;
   text-decoration: none;
-  font-weight: bold;
-  font-size: 15px;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: all 0.3s ease;
 }
-nav a:hover {
-  color: #ffeb3b; /* kuning cerah saat hover */
-  transform: scale(1.1);
+nav ul li a:hover {
+  color: #ffeb3b;
+  transform: scale(1.05);
 }
 
 /* ===== Container ===== */
