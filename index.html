@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Dashboard Kesiswaan</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Font Awesome untuk ikon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     .dashboard {
@@ -55,6 +54,38 @@
       font-size: 22px;
       color: #006400;
     }
+
+    /* ===== Tabel Jurusan ===== */
+    .jurusan-section {
+      margin: 50px auto;
+      width: 90%;
+      text-align: center;
+    }
+    .jurusan-section h3 {
+      color: #006400;
+      margin-bottom: 5px;
+    }
+    .jurusan-section p {
+      color: #555;
+      font-size: 13px;
+    }
+    .tabel-jurusan {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    .tabel-jurusan th, .tabel-jurusan td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    .tabel-jurusan th {
+      background: #c6f6d5;
+      color: #006400;
+    }
+    .tabel-jurusan tbody tr:nth-child(even) {
+      background: #f0fff4;
+    }
   </style>
 </head>
 <body>
@@ -72,6 +103,7 @@
     </ul>
   </nav>
 
+  <!-- Dashboard Statistik -->
   <div class="dashboard">
     <h2>Dashboard Kesiswaan</h2>
     <p>Sistem Data & Absensi SMK AL HUDA TURALAK</p>
@@ -100,6 +132,23 @@
     </div>
   </div>
 
+  <!-- Tabel Jurusan & Kelas -->
+  <div class="jurusan-section">
+    <h3>Daftar Jurusan & Kelas (Siswa Turalak)</h3>
+    <p>Data berikut hanya menampilkan jumlah siswa dengan pangkalan TRK (Turalak).</p>
+    <table class="tabel-jurusan" id="tabel-jurusan">
+      <thead>
+        <tr>
+          <th>Jurusan</th>
+          <th>Kelas X</th>
+          <th>Kelas XI</th>
+          <th>Kelas XII</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
   <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
 
   <!-- Script koneksi Supabase -->
@@ -107,7 +156,7 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
     const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' // anon key kamu
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // anon key kamu
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     async function loadDashboard() {
@@ -122,19 +171,40 @@
 
       // Hitung total siswa
       const totalSiswa = data.length
+      const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
+      const totalTRK = siswaTRK.length
 
-      // Hitung siswa TRK
-      const siswaTRK = data.filter(s => s.pangkalan === 'TRK').length
-
-      // Jurusan dan kelas statis (bisa diganti kalau mau dinamis)
+      // Jurusan dan kelas statis
       const jurusan = 6
       const totalKelas = 19
 
-      // Tampilkan ke dashboard
+      // Tampilkan ke kartu
       document.getElementById('total-siswa').textContent = totalSiswa
-      document.getElementById('siswa-trk').textContent = siswaTRK
+      document.getElementById('siswa-trk').textContent = totalTRK
       document.getElementById('jurusan').textContent = jurusan
       document.getElementById('total-kelas').textContent = totalKelas
+
+      // Hitung jumlah siswa per jurusan dan kelas
+      const jurusanList = ['LPS','MPLB','DKV','TKJ','TKRO','TF']
+      const kelasList = ['X','XI','XII']
+      const tbody = document.querySelector('#tabel-jurusan tbody')
+      tbody.innerHTML = ''
+
+      jurusanList.forEach(j => {
+        const row = document.createElement('tr')
+        const tdJurusan = document.createElement('td')
+        tdJurusan.textContent = j
+        row.appendChild(tdJurusan)
+
+        kelasList.forEach(k => {
+          const count = siswaTRK.filter(s => s.Kelas_jurusan === j && s.Kelas.startsWith(k)).length
+          const td = document.createElement('td')
+          td.textContent = count
+          row.appendChild(td)
+        })
+
+        tbody.appendChild(row)
+      })
     }
 
     loadDashboard()
