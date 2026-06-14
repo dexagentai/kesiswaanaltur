@@ -68,7 +68,7 @@
 
     async function loadData() {
       const { data, error } = await supabase
-        .from('siswa')   // gunakan nama tabel asli, bukan siswa.csv
+        .from('siswa')
         .select('*')
         .order('Kelas_jurusan', { ascending: true })
         .order('Nama', { ascending: true })
@@ -128,7 +128,7 @@
                       <td>${s['Tanggal Lahir'] || ''}</td>
                       <td>${s.pangkalan || ''}</td>
                       <td>
-                        <button class="btn-yellow" onclick="bukaKoreksi('${s.NISN}')">
+                        <button class="btn-yellow" onclick="bukaForm('${s.NISN}','${s.Nama}','${s.pangkalan}')">
                           Koreksi Data
                         </button>
                       </td>
@@ -148,22 +148,11 @@
     // Panggil pertama kali
     loadData()
 
-    // Realtime subscription: auto update kalau ada perubahan
-    supabase
-      .channel('siswa-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'siswa' }, // gunakan nama tabel asli
-        payload => {
-          console.log('Perubahan data:', payload)
-          loadData()
-        }
-      )
-      .subscribe()
-
-    // Fungsi buka koreksi
-    window.bukaKoreksi = function(nisn) {
-      window.location.href = `koreksi.html?nisn=${nisn}`
+    // Fungsi buka Google Form
+    window.bukaForm = function(nisn, nama, pangkalan) {
+      // ganti entry.xxxxx dengan ID field di Google Form
+      const url = `https://forms.gle/68vusL6WLDvj7eMx9?usp=pp_url&entry.111111=${nisn}&entry.222222=${nama}&entry.333333=${pangkalan}`
+      window.open(url, '_blank')
     }
   </script>
 </body>
