@@ -3,23 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Koreksi Data Siswa</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 30px; }
-    form { max-width: 500px; margin: auto; }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
-    button { margin-top: 15px; padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-  </style>
 </head>
 <body>
   <h2>Koreksi Data Siswa</h2>
   <form id="form-koreksi">
     <label>Nama Siswa:</label>
-    <input type="text" id="Nama" name="Nama" placeholder="Masukkan nama siswa">
+    <input type="text" id="Nama" name="Nama" readonly>
 
     <label>Komentar Koreksi:</label>
-    <textarea id="Komentar" name="Komentar" rows="4" placeholder="Tuliskan koreksi atau komentar..."></textarea>
+    <textarea id="Komentar" name="Komentar" rows="4"></textarea>
 
     <button type="submit">Kirim Koreksi</button>
   </form>
@@ -31,21 +23,36 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // anon key kamu
     const supabase = createClient(supabaseUrl, supabaseKey)
 
+    // Ambil NISN dari URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const nisn = urlParams.get('nisn')
+
+    // Ambil data siswa untuk isi nama
+    const { data } = await supabase
+      .from('siswa')
+      .select('Nama')
+      .eq('NISN', nisn)
+      .single()
+
+    if (data) {
+      document.getElementById('Nama').value = data.Nama
+    }
+
+    // Simpan komentar ke kolom komentar di tabel siswa
     document.getElementById('form-koreksi').addEventListener('submit', async (e) => {
       e.preventDefault()
-      const nama = document.getElementById('Nama').value
       const komentar = document.getElementById('Komentar').value
 
-      // Simpan ke tabel komentar (buat tabel 'komentar' di Supabase)
       const { error } = await supabase
-        .from('komentar')
-        .insert([{ nama_siswa: nama, komentar: komentar }])
+        .from('siswa')
+        .update({ komentar: komentar })
+        .eq('NISN', nisn)
 
       if (error) {
-        alert('Gagal kirim koreksi: ' + error.message)
+        alert('Gagal simpan koreksi: ' + error.message)
       } else {
         alert('Koreksi berhasil dikirim!')
-        document.getElementById('form-koreksi').reset()
+        window.location.href = 'siswa.html'
       }
     })
   </script>
