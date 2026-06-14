@@ -5,11 +5,46 @@
   <title>Data Siswa</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    /* ===== NAVBAR ===== */
+    nav {
+      background-color: #006400;
+      padding: 10px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      transition: all 0.3s ease;
+    }
+    nav ul li a:hover {
+      color: #ffeb3b;
+      transform: scale(1.1);
+    }
+
+    /* ===== TOOLBAR ===== */
     .toolbar { margin-bottom: 15px; }
     .toolbar select, .toolbar button {
       margin-right: 10px;
       padding: 6px 10px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
     }
+    .btn-blue { background: #007bff; color: white; }
+    .btn-green { background: #28a745; color: white; }
+    .btn-yellow { background: #ffc107; border: none; padding: 4px 8px; cursor: pointer; }
+
+    /* ===== TABEL ===== */
     .kelas-header {
       background-color: #0099ff;
       color: white;
@@ -26,7 +61,11 @@
       padding: 6px;
       text-align: left;
     }
-    .btn-yellow { background: #ffc107; border: none; padding: 4px 8px; cursor: pointer; }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -50,7 +89,7 @@
         <option value="KelasJauh">Kelas Jauh (≠ TRK)</option>
       </select>
       <button class="btn-blue">Tambah Siswa</button>
-      <button class="btn-green">Unduh Excel</button>
+      <button class="btn-green" id="btn-unduh">Unduh Excel</button>
     </div>
 
     <div id="data-container"></div>
@@ -150,10 +189,36 @@
 
     // Fungsi buka Google Form
     window.bukaForm = function(nisn, nama, pangkalan) {
-      // ganti entry.xxxxx dengan ID field di Google Form
-      const url = `https://forms.gle/68vusL6WLDvj7eMx9?usp=pp_url&entry.111111=${nisn}&entry.222222=${nama}&entry.333333=${pangkalan}`
+      const url = `https://forms.gle/68vusL6WLDvj7eMx9?usp=pp_url&entry.111111=${encodeURIComponent(nisn)}&entry.222222=${encodeURIComponent(nama)}&entry.333333=${encodeURIComponent(pangkalan)}`
       window.open(url, '_blank')
     }
+
+    // Fungsi Unduh Excel (CSV)
+    document.getElementById('btn-unduh').addEventListener('click', async () => {
+      try {
+        const { data, error } = await supabase
+          .from('siswa')
+          .select('*')
+          .order('Kelas_jurusan', { ascending: true })
+          .order('Nama', { ascending: true })
+
+        if (error) throw error
+
+        const header = Object.keys(data[0]).join(',')
+        const rows = data.map(row => Object.values(row).join(',')).join('\n')
+        const csvContent = `${header}\n${rows}`
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'data_siswa.csv'
+        a.click()
+        URL.revokeObjectURL(url)
+      } catch (err) {
+        alert('Gagal mengunduh data: ' + err.message)
+      }
+    })
   </script>
 </body>
 </html>
