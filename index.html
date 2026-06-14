@@ -106,7 +106,7 @@
   <!-- Dashboard Statistik -->
   <div class="dashboard">
     <h2>Dashboard Kesiswaan</h2>
-    <p>Sistem Data & Absensi SMK AL HUDA TURALAK</p>
+    <p>Sistem Data &Siswa TerintegrasiK</p>
     <hr style="width:80%; border:0; border-top:1px solid #ccc; margin:20px auto;">
     <div class="cards">
       <div class="card">
@@ -185,23 +185,29 @@
       document.getElementById('total-kelas').textContent = totalKelas
 
       // Hitung jumlah siswa per jurusan dan kelas
+      // Hitung jumlah siswa per jurusan dan kelas
       const jurusanList = ['LPS','MPLB','DKV','TKJ','TKRO','TF']
       const kelasList = ['X','XI','XII']
       const tbody = document.querySelector('#tabel-jurusan tbody')
       tbody.innerHTML = ''
 
       jurusanList.forEach(j => {
-        const row = document.createElement('tr')
-        const tdJurusan = document.createElement('td')
-        tdJurusan.textContent = j
-        row.appendChild(tdJurusan)
+      const row = document.createElement('tr')
+      const tdJurusan = document.createElement('td')
+      tdJurusan.textContent = j
+      row.appendChild(tdJurusan)
 
         kelasList.forEach(k => {
-          const count = siswaTRK.filter(s => s.Kelas_jurusan === j && s.Kelas.startsWith(k)).length
-          const td = document.createElement('td')
-          td.textContent = count
-          row.appendChild(td)
-        })
+        // cek langsung dari Kelas_jurusan, misalnya "XI TKJ"
+        const count = siswaTRK.filter(s => s.Kelas_jurusan.startsWith(k) && s.Kelas_jurusan.includes(j)).length
+        const td = document.createElement('td')
+    td.textContent = count
+    row.appendChild(td)
+  })
+
+  tbody.appendChild(row)
+})
+
 
         tbody.appendChild(row)
       })
