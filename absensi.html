@@ -2,38 +2,60 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Template Absensi</title>
+  <title>Template Absensi - SMK AL HUDA TURALAK</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    .toolbar { margin: 20px 0; text-align: center; }
-    .toolbar select, .toolbar button {
-      margin-right: 10px;
-      padding: 6px 12px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
+    body { background: #fff; }
+    .kop-sekolah {
+      text-align: center;
+      border-bottom: 2px solid #000;
+      margin-bottom: 10px;
     }
-    .btn-green { background: #28a745; color: white; }
+    .kop-sekolah img {
+      width: 80px;
+      float: left;
+      margin-right: 10px;
+    }
+    .kop-sekolah h2, .kop-sekolah h3, .kop-sekolah p {
+      margin: 0;
+      line-height: 1.3;
+    }
+    .kop-sekolah h2 { font-size: 20px; font-weight: bold; }
+    .kop-sekolah h3 { font-size: 18px; font-weight: bold; }
+    .kop-sekolah p { font-size: 12px; }
+
+    .info-guru {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .info-guru table {
+      margin: 10px auto;
+      border-collapse: collapse;
+    }
+    .info-guru td {
+      padding: 4px 8px;
+    }
+
     .tabel-absensi {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 10px;
+      font-size: 12px;
     }
     .tabel-absensi th, .tabel-absensi td {
-      border: 1px solid #ccc;
-      padding: 6px;
+      border: 1px solid #000;
+      padding: 4px;
       text-align: center;
-      font-size: 13px;
     }
     .tabel-absensi th {
-      background: #c6f6d5;
+      background: #e6ffe6;
       color: #006400;
     }
+
     @media print {
       nav, .toolbar, footer { display: none; }
-      body { background: white; }
-      .tabel-absensi { font-size: 12px; }
+      body { margin: 0; }
     }
   </style>
 </head>
@@ -53,8 +75,27 @@
   </nav>
 
   <div class="container">
-    <h2>Template Absensi</h2>
-    <div class="toolbar">
+    <div class="kop-sekolah">
+      <img src="logo-smk.png" alt="Logo SMK">
+      <h2>YAYASAN AL HUDA TURALAK</h2>
+      <h3>SEKOLAH MENENGAH KEJURUAN (SMK) AL HUDA TURALAK</h3>
+      <p>STATUS TERAKREDITASI A</p>
+      <p>NPSN. 20254634 NISS. 322021431023</p>
+      <p>Jl. Sukamaju No. 11 Sukamaju Baregbeg Ciamis 46251 Telp/Fax (0265) 721536 Jawa Barat</p>
+      <p>Email: smk.alhuda.trk@gmail.com Website: http://smkalhudaturalak-cms.sch.id</p>
+      <hr>
+      <h4>DAFTAR HADIR PESERTA DIDIK<br>SMK AL HUDA TURALAK</h4>
+    </div>
+
+    <div class="info-guru">
+      <table>
+        <tr><td>Nama Guru</td><td>: ....................................................</td></tr>
+        <tr><td>Mata Pelajaran</td><td>: ....................................................</td></tr>
+        <tr><td>Kelas / Semester</td><td id="kelas-info">: ....................................................</td></tr>
+      </table>
+    </div>
+
+    <div class="toolbar" style="text-align:center;">
       <label for="filter-kelas">Pilih Kelas/Jurusan:</label>
       <select id="filter-kelas"></select>
       <button class="btn-green" onclick="window.print()">Cetak Absensi</button>
@@ -76,7 +117,7 @@
     async function loadAbsensi() {
       const { data, error } = await supabase
         .from('siswa')
-        .select('*')
+        .select('Nama, NISN, Kelas_jurusan, pangkalan')
         .order('Nama', { ascending: true })
 
       if (error) {
@@ -84,9 +125,14 @@
         return
       }
 
-      // Ambil daftar kelas unik
-      const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan))]
+      // Filter hanya siswa TRK
+      const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
+
+      // Ambil daftar kelas unik dari TRK
+      const kelasSet = [...new Set(siswaTRK.map(s => s.Kelas_jurusan).filter(Boolean))]
       const filterSelect = document.getElementById('filter-kelas')
+      filterSelect.innerHTML = ''
+
       kelasSet.forEach(k => {
         const opt = document.createElement('option')
         opt.value = k
@@ -95,15 +141,19 @@
       })
 
       function renderAbsensi(kelas) {
-        const siswaKelas = data.filter(s => s.Kelas_jurusan === kelas)
+        const siswaKelas = siswaTRK.filter(s => s.Kelas_jurusan === kelas)
         const container = document.getElementById('absensi-container')
+        document.getElementById('kelas-info').textContent = `: ${kelas}`
+
+        // Buat header tanggal 1–31
+        const tanggalHeader = Array.from({length: 31}, (_,i)=>`<th>${i+1}</th>`).join('')
+
         container.innerHTML = `
-          <h3>${kelas}</h3>
           <table class="tabel-absensi">
             <thead>
               <tr>
                 <th>No</th><th>Nama</th><th>NISN</th>
-                <th>Hari 1</th><th>Hari 2</th><th>Hari 3</th><th>Hari 4</th><th>Hari 5</th>
+                ${tanggalHeader}
                 <th>Tanda Tangan Guru</th>
               </tr>
             </thead>
@@ -113,7 +163,7 @@
                   <td>${i+1}</td>
                   <td>${s.Nama}</td>
                   <td>${s.NISN}</td>
-                  <td></td><td></td><td></td><td></td><td></td>
+                  ${Array.from({length:31},()=>'<td></td>').join('')}
                   <td></td>
                 </tr>`).join('')}
             </tbody>
@@ -122,8 +172,10 @@
       }
 
       // Render default kelas pertama
-      renderAbsensi(kelasSet[0])
-      filterSelect.onchange = () => renderAbsensi(filterSelect.value)
+      if (kelasSet.length > 0) {
+        renderAbsensi(kelasSet[0])
+        filterSelect.onchange = () => renderAbsensi(filterSelect.value)
+      }
     }
 
     loadAbsensi()
