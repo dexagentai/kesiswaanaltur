@@ -4,8 +4,37 @@
   <meta charset="UTF-8">
   <title>Template Absensi - SMK AL HUDA TURALAK</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body { background: #fff; font-family: Arial, sans-serif; }
+
+    /* Navbar seragam */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #2f855a;
+      color: white;
+      padding: 10px;
+      z-index: 1000;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+      margin: 0;
+      padding: 0;
+      justify-content: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover { text-decoration: underline; }
+
+    .container { padding: 100px 20px 20px; }
+
     .kop-sekolah {
       text-align: center;
       border-bottom: 2px solid #000;
@@ -26,14 +55,8 @@
     .kop-sekolah h3 { font-size: 18px; font-weight: bold; }
     .kop-sekolah p { font-size: 12px; }
 
-    .info-guru {
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .info-guru table {
-      margin: 10px auto;
-      border-collapse: collapse;
-    }
+    .info-guru { margin-top: 10px; font-size: 14px; }
+    .info-guru table { margin: 10px auto; border-collapse: collapse; }
     .info-guru td { padding: 4px 8px; }
 
     .tabel-absensi {
@@ -48,22 +71,18 @@
       text-align: center;
     }
     .tabel-absensi th {
-      background: #e6ffe6;
+      background: #c6f6d5;
       color: #006400;
     }
-    .tabel-absensi th:nth-child(2) { width: 200px; } /* Nama */
-    .tabel-absensi th:nth-child(3) { width: 120px; } /* NISN */
-    .tabel-absensi th:nth-child(4) { width: auto; } /* Tanggal */
+    .tabel-absensi th:nth-child(2) { width: 200px; }
+    .tabel-absensi th:nth-child(3) { width: 120px; }
 
     .ttd-section {
       margin-top: 40px;
       width: 90%;
       font-size: 13px;
     }
-    .ttd-section table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    .ttd-section table { width: 100%; border-collapse: collapse; }
     .ttd-section td {
       padding: 6px;
       text-align: center;
@@ -83,16 +102,13 @@
   </style>
 </head>
 <body>
+  <!-- Navbar seragam -->
   <nav>
-    <div class="logo">
-      <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
-      <span>SMK AL HUDA TURALAK</span>
-    </div>
     <ul>
-      <li><a href="index.html">Dashboard</a></li>
-      <li><a href="siswa.html">Data Siswa</a></li>
-      <li><a href="absensi.html">Absensi</a></li>
-      <li><a href="administrasi.html">Administrasi</a></li>
+      <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="siswa.html"><i class="fas fa-users"></i> Data Siswa</a></li>
+      <li><a href="absensi.html"><i class="fas fa-calendar-check"></i> Absensi</a></li>
+      <li><a href="administrasi.html"><i class="fas fa-folder-open"></i> Administrasi</a></li>
     </ul>
   </nav>
 
@@ -148,22 +164,22 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
     const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // anon key kamu
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     async function loadAbsensi() {
       const { data, error } = await supabase
         .from('siswa')
-        .select('Nama, NISN, Kelas_jurusan, pangkalan')
-        .order('Nama', { ascending: true })
+        .select('nama, nisn, kelas_jurusan, pangkalan')
+        .order('nama', { ascending: true })
 
       if (error) {
         console.error(error)
         return
       }
 
-      const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
-      const kelasSet = [...new Set(siswaTRK.map(s => s.Kelas_jurusan).filter(Boolean))]
+      const siswaTRK = data.filter(s => s.pangkalan?.toUpperCase() === 'TRK')
+      const kelasSet = [...new Set(siswaTRK.map(s => s.kelas_jurusan).filter(Boolean))]
       const filterSelect = document.getElementById('filter-kelas')
       filterSelect.innerHTML = ''
 
@@ -175,9 +191,14 @@
       })
 
       function renderAbsensi(kelas) {
-        const siswaKelas = siswaTRK.filter(s => s.Kelas_jurusan === kelas)
+        const siswaKelas = siswaTRK.filter(s => s.kelas_jurusan === kelas)
         const container = document.getElementById('absensi-container')
         document.getElementById('kelas-info').textContent = `: ${kelas}`
+
+        if (siswaKelas.length === 0) {
+          container.innerHTML = `<p style="color:red;">Tidak ada data siswa untuk kelas ${kelas}</p>`
+          return
+        }
 
         container.innerHTML = `
           <table class="tabel-absensi">
@@ -191,15 +212,6 @@
               ${siswaKelas.map((s,i)=>`
                 <tr>
                   <td>${i+1}</td>
-                  <td>${s.Nama}</td>
-                  <td>${s.NISN}</td>
-                  ${Array.from({length:15},()=>'<td></td>').join('')}
-                </tr>`).join('')}
-            </tbody>
-          </table>
-        `
-      }
-
-      if (kelasSet.length > 0) {
-        renderAbsensi(kelasSet[0])
-        filterSelect.onchange = () => renderAbsensi(filterSelect
+                  <td>${s.nama}</td>
+                  <td>${s.nisn}</td>
+                  ${Array.from({length:15},()=>'<td></td
