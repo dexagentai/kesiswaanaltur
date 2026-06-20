@@ -65,14 +65,14 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
     const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // 
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // ganti dengan anon key terbaru
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     async function loadAbsensi() {
       const { data, error } = await supabase
         .from('siswa')
-        .select('nama, nisn, kelas_jurusan, pangkalan')
-        .order('nama', { ascending: true })
+        .select('Nama, NISN, Kelas_jurusan, pangkalan')
+        .order('Nama', { ascending: true })
 
       if (error) {
         console.error('Error ambil data:', error)
@@ -83,7 +83,7 @@
 
       // filter hanya TRK
       const siswaTRK = data.filter(s => s.pangkalan?.toUpperCase() === 'TRK')
-      const kelasSet = [...new Set(siswaTRK.map(s => s.kelas_jurusan).filter(Boolean))]
+      const kelasSet = [...new Set(siswaTRK.map(s => s.Kelas_jurusan).filter(Boolean))]
       const filterSelect = document.getElementById('filter-kelas')
       filterSelect.innerHTML = ''
 
@@ -96,7 +96,7 @@
       })
 
       function renderAbsensi(kelas) {
-        const siswaKelas = siswaTRK.filter(s => s.kelas_jurusan === kelas)
+        const siswaKelas = siswaTRK.filter(s => s.Kelas_jurusan === kelas)
         const container = document.getElementById('absensi-container')
         document.getElementById('kelas-info').textContent = `: ${kelas}`
 
@@ -117,8 +117,8 @@
               ${siswaKelas.map((s,i)=>`
                 <tr>
                   <td>${i+1}</td>
-                  <td>${s.nama}</td>
-                  <td>${s.nisn}</td>
+                  <td>${s.Nama}</td>
+                  <td>${s.NISN}</td>
                   ${Array.from({length:15},()=>'<td></td>').join('')}
                 </tr>`).join('')}
             </tbody>
