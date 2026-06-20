@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Template Absensi - SMK AL HUDA TURALAK</title>
+  <title>Absensi Siswa - SMK AL HUDA TURALAK</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -183,6 +183,7 @@
       const filterSelect = document.getElementById('filter-kelas')
       filterSelect.innerHTML = ''
 
+      // isi dropdown kelas
       kelasSet.forEach(k => {
         const opt = document.createElement('option')
         opt.value = k
@@ -213,5 +214,22 @@
                 <tr>
                   <td>${i+1}</td>
                   <td>${s.nama}</td>
-                  <td>${s.nisn}</td>
-                  ${Array.from({length:15},()=>'<td></td
+                  <td>${s.Nama}</td>
+                  <td>${s.NISN}</td>
+                  ${Array.from({length:31},()=>'<td></td>').join('')}
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        `
+      }
+
+      if (kelasSet.length > 0) {
+        renderAbsensi(kelasSet[0])
+        filterSelect.onchange = () => renderAbsensi(filterSelect.value)
+      }
+    }
+
+    loadAbsensi()
+  </script>
+</body>
+</html>
