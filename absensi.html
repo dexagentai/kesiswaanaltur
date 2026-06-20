@@ -10,11 +10,13 @@
       text-align: center;
       border-bottom: 2px solid #000;
       margin-bottom: 10px;
+      position: relative;
     }
     .kop-sekolah img {
+      position: absolute;
+      left: 40px;
+      top: 10px;
       width: 80px;
-      float: left;
-      margin-right: 10px;
     }
     .kop-sekolah h2, .kop-sekolah h3, .kop-sekolah p {
       margin: 0;
@@ -32,9 +34,7 @@
       margin: 10px auto;
       border-collapse: collapse;
     }
-    .info-guru td {
-      padding: 4px 8px;
-    }
+    .info-guru td { padding: 4px 8px; }
 
     .tabel-absensi {
       width: 100%;
@@ -51,9 +51,30 @@
       background: #e6ffe6;
       color: #006400;
     }
-    .tabel-absensi th:nth-child(2) { width: 180px; } /* Nama */
-    .tabel-absensi th:nth-child(3) { width: 100px; } /* NISN */
-    .tabel-absensi th:nth-child(n+4) { width: 25px; } /* Kolom tanggal */
+    .tabel-absensi th:nth-child(2) { width: 180px; }
+    .tabel-absensi th:nth-child(3) { width: 100px; }
+    .tabel-absensi th:nth-child(n+4) { width: 25px; }
+
+    .ttd-section {
+      margin-top: 30px;
+      width: 90%;
+      font-size: 13px;
+    }
+    .ttd-section table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ttd-section td {
+      padding: 6px;
+      text-align: center;
+      vertical-align: bottom;
+      height: 60px;
+    }
+    .ttd-section .nama {
+      border-top: 1px solid #000;
+      display: inline-block;
+      padding-top: 4px;
+    }
 
     @media print {
       nav, .toolbar, footer { display: none; }
@@ -62,7 +83,6 @@
   </style>
 </head>
 <body>
-  <!-- Navbar seragam -->
   <nav>
     <div class="logo">
       <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
@@ -104,6 +124,22 @@
     </div>
 
     <div id="absensi-container"></div>
+
+    <!-- Tambahan tanda tangan -->
+    <div class="ttd-section">
+      <table>
+        <tr>
+          <td style="text-align:left;">Mengetahui,<br>Waka Kurikulum</td>
+          <td></td>
+          <td style="text-align:right;">Guru Mapel</td>
+        </tr>
+        <tr>
+          <td><span class="nama">Suryanto, S.E</span></td>
+          <td></td>
+          <td><span class="nama">.......................................</span></td>
+        </tr>
+      </table>
+    </div>
   </div>
 
   <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
@@ -126,10 +162,7 @@
         return
       }
 
-      // Filter hanya siswa TRK
       const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
-
-      // Ambil daftar kelas unik dari TRK
       const kelasSet = [...new Set(siswaTRK.map(s => s.Kelas_jurusan).filter(Boolean))]
       const filterSelect = document.getElementById('filter-kelas')
       filterSelect.innerHTML = ''
@@ -146,20 +179,14 @@
         const container = document.getElementById('absensi-container')
         document.getElementById('kelas-info').textContent = `: ${kelas}`
 
-        // Header "Tanggal" dengan kotak kosong di bawahnya
-        const tanggalHeader = `
-          <tr>
-            <th rowspan="2">No</th>
-            <th rowspan="2">Nama</th>
-            <th rowspan="2">NISN</th>
-            <th colspan="15">Tanggal</th>
-          </tr>
-          <tr>${Array.from({length:15},()=>'<th></th>').join('')}</tr>
-        `
-
         container.innerHTML = `
           <table class="tabel-absensi">
-            <thead>${tanggalHeader}</thead>
+            <thead>
+              <tr>
+                <th>No</th><th>Nama</th><th>NISN</th><th colspan="15">Tanggal</th>
+              </tr>
+              <tr>${Array.from({length:15},()=>'<th></th>').join('')}</tr>
+            </thead>
             <tbody>
               ${siswaKelas.map((s,i)=>`
                 <tr>
