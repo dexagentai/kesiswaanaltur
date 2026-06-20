@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Absensi Siswa</title>
+  <title>Daftar Hadir Siswa</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -10,42 +10,40 @@
     nav {
       background: #2f855a;
       color: white;
-      padding: 10px;
+      padding: 6px 10px; /* lebih tipis agar tidak menutupi kop */
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: relative;
+      z-index: 10;
     }
     nav .logo { display: flex; align-items: center; gap: 10px; }
-    nav .logo img { width: 40px; height: 40px; }
+    nav .logo img { width: 35px; height: 35px; }
     nav ul { list-style: none; display: flex; gap: 20px; margin-right: 20px; }
     nav a { color: white; text-decoration: none; font-weight: bold; }
 
-    /* Kop surat */
-    .kop-surat {
+    /* Kop sekolah */
+    .kop-sekolah {
       text-align: center;
-      border-bottom: 2px solid #000;
-      padding-bottom: 10px;
-      margin: 20px 0;
-      position: relative;
+      margin-top: 10px; /* jarak kecil dari navbar */
+      line-height: 1.4;
     }
-    .kop-surat img {
-      position: absolute;
-      left: 20px;
-      top: 0;
-      width: 70px;
-      height: 70px;
-    }
-    .kop-surat h2, .kop-surat h3, .kop-surat p {
-      margin: 0; line-height: 1.4;
+
+    /* Judul halaman */
+    h2 {
+      text-align: center;
+      margin: 10px 0 20px 0; /* jarak atas dikurangi */
+      color: #006400;
+      font-weight: bold;
     }
 
     /* Info guru */
-    .info-guru { margin-bottom: 20px; font-size: 14px; }
-    .info-guru table { margin: 10px auto; border-collapse: collapse; }
+    .info-guru { margin: 10px auto 20px auto; font-size: 14px; width: fit-content; }
+    .info-guru table { border-collapse: collapse; }
     .info-guru td { padding: 4px 8px; }
 
     /* Toolbar */
-    .toolbar { margin: 20px 0; text-align: center; }
+    .toolbar { margin: 10px 0; text-align: center; }
     .btn-green {
       background: #2f855a; color: white; border: none;
       padding: 6px 12px; margin-left: 10px; cursor: pointer;
@@ -68,7 +66,7 @@
     }
 
     /* Tanda tangan */
-    .ttd-section { margin-top: 40px; width: 90%; font-size: 14px; }
+    .ttd-section { margin-top: 30px; width: 90%; font-size: 14px; }
     .ttd-section table { width: 100%; border-collapse: collapse; }
     .ttd-section td {
       width: 50%; text-align: center; vertical-align: bottom; height: 100px;
@@ -95,50 +93,48 @@
     </ul>
   </nav>
 
-  <!-- Kop surat -->
-  <div class="kop-surat">
-    <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
-    <h2>YAYASAN AL HUDA TURALAK</h2>
+  <!-- Kop sekolah -->
+  <div class="kop-sekolah">
     <h3>SMK AL HUDA TURALAK</h3>
     <p>Jl. Raya Turalak No. 123, Kab. Ciamis, Jawa Barat</p>
     <p>Telp: (0265) 123456 — Email: smkalhuda@sch.id</p>
   </div>
 
-  <div class="container">
-    <h2>Absensi Siswa</h2>
+  <!-- Judul -->
+  <h2>DAFTAR HADIR SISWA</h2>
 
-    <!-- Info guru -->
-    <div class="info-guru">
-      <table>
-        <tr><td>Nama Guru</td><td>: ....................................................</td></tr>
-        <tr><td>Mata Pelajaran</td><td>: ....................................................</td></tr>
-        <tr><td>Kelas / Semester</td><td id="kelas-info">: ....................................................</td></tr>
-      </table>
-    </div>
+  <!-- Info guru -->
+  <div class="info-guru">
+    <table>
+      <tr><td>Nama Guru</td><td>: ....................................................</td></tr>
+      <tr><td>Mata Pelajaran</td><td>: ....................................................</td></tr>
+      <tr><td>Kelas / Semester</td><td id="kelas-info">: ....................................................</td></tr>
+    </table>
+  </div>
 
-    <div class="toolbar">
-      <label for="filter-kelas">Pilih Kelas/Jurusan:</label>
-      <select id="filter-kelas"></select>
-      <button class="btn-green" onclick="window.print()">Cetak Absensi</button>
-    </div>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <label for="filter-kelas">Pilih Kelas/Jurusan:</label>
+    <select id="filter-kelas"></select>
+    <button class="btn-green" onclick="window.print()">Cetak Absensi</button>
+  </div>
 
-    <div id="absensi-container"></div>
+  <div id="absensi-container"></div>
 
-    <!-- Tanda tangan -->
-    <div class="ttd-section">
-      <table>
-        <tr>
-          <td>
-            Mengetahui,<br>Waka Kurikulum<br><br><br>
-            <span class="nama">Suryanto, S.E</span>
-          </td>
-          <td>
-            Guru Mapel<br><br><br>
-            <span class="nama">.......................................</span>
-          </td>
-        </tr>
-      </table>
-    </div>
+  <!-- Tanda tangan -->
+  <div class="ttd-section">
+    <table>
+      <tr>
+        <td>
+          Mengetahui,<br>Waka Kurikulum<br><br><br>
+          <span class="nama">Suryanto, S.E</span>
+        </td>
+        <td>
+          Guru Mapel<br><br><br>
+          <span class="nama">.......................................</span>
+        </td>
+      </tr>
+    </table>
   </div>
 
   <script type="module">
