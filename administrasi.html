@@ -2,28 +2,106 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Administrasi</title>
+  <title>Administrasi Sekolah</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Navbar */
+    nav {
+      background: #2f855a;
+      color: white;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .logo { display: flex; align-items: center; gap: 10px; }
+    nav .logo img { width: 40px; height: 40px; }
+    nav ul { list-style: none; display: flex; gap: 20px; margin-right: 20px; }
+    nav a { color: white; text-decoration: none; font-weight: bold; }
+
+    /* Container */
+    .container { padding: 20px; }
+
+    /* Card grid dokumen */
+    .row { display: flex; flex-wrap: wrap; gap: 20px; }
+    .card {
+      flex: 1 1 250px;
+      background: #f1f8e9;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .card i { font-size: 40px; color: #2f855a; margin-bottom: 10px; }
+    .card h5 { color: #2f855a; margin-bottom: 10px; }
+    .card a {
+      display: inline-block;
+      background: #2f855a;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .card a:hover { background: #276749; }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 13px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
+  <!-- Navbar -->
   <nav>
+    <div class="logo">
+      <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
+      <span>SMK AL HUDA TURALAK</span>
+    </div>
     <ul>
-      <li><a href="index.html">Dashboard</a></li>
-      <li><a href="siswa.html">Data Siswa</a></li>
-      <li><a href="absensi.html">Template Absensi</a></li>
-      <li><a href="administrasi.html">Administrasi</a></li>
+      <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="siswa.html"><i class="fas fa-users"></i> Data Siswa</a></li>
+      <li><a href="absensi.html"><i class="fas fa-calendar-check"></i> Absensi</a></li>
+      <li><a href="administrasi.html"><i class="fas fa-folder-open"></i> Administrasi</a></li>
     </ul>
   </nav>
 
   <div class="container">
-    <h2>Administrasi</h2>
-    <ul>
-      <li><a href="dokumen/surat_izin_siswa.docx" download>Surat Izin Siswa</a></li>
-      <li><a href="dokumen/surat_izin_guru.pdf" download>Surat Izin Guru</a></li>
-      <li><a href="dokumen/formulir_izin_kegiatan.xlsx" download>Formulir Izin Kegiatan</a></li>
-    </ul>
+    <h2 class="fw-bold text-success">Menu Administrasi</h2>
+    <p class="text-muted">Template unduhan berbagai macam surat/dokumen.</p>
+    <hr>
+
+    <div class="row">
+      <!-- Contoh dokumen -->
+      <div class="card">
+        <i class="fas fa-file-alt"></i>
+        <h5>Surat Izin</h5>
+        <a href="dokumen/surat_izin.docx" download><i class="fas fa-download"></i> Unduh</a>
+      </div>
+
+      <div class="card">
+        <i class="fas fa-file-alt"></i>
+        <h5>Surat Keterangan</h5>
+        <a href="dokumen/surat_keterangan.docx" download><i class="fas fa-download"></i> Unduh</a>
+      </div>
+
+      <div class="card">
+        <i class="fas fa-file-alt"></i>
+        <h5>Laporan Guru</h5>
+        <a href="dokumen/laporan_guru.docx" download><i class="fas fa-download"></i> Unduh</a>
+      </div>
+
+      <div class="card">
+        <i class="fas fa-file-alt"></i>
+        <h5>Rekap Data</h5>
+        <a href="dokumen/rekap_data.xlsx" download><i class="fas fa-download"></i> Unduh</a>
+      </div>
+    </div>
   </div>
 
-  <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
+  <footer>© 2026 SMK AL HUDA TURALAK — Administrasi Sekolah</footer>
 </body>
 </html>
