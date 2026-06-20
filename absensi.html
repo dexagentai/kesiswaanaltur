@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Template Absensi - SMK AL HUDA TURALAK</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body { background: #fff; }
     .kop-sekolah {
@@ -52,6 +51,9 @@
       background: #e6ffe6;
       color: #006400;
     }
+    .tabel-absensi th:nth-child(2) { width: 180px; } /* Nama */
+    .tabel-absensi th:nth-child(3) { width: 100px; } /* NISN */
+    .tabel-absensi th:nth-child(n+4) { width: 22px; } /* Tanggal */
 
     @media print {
       nav, .toolbar, footer { display: none; }
@@ -60,17 +62,16 @@
   </style>
 </head>
 <body>
-  <!-- Navbar seragam -->
   <nav>
     <div class="logo">
       <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
       <span>SMK AL HUDA TURALAK</span>
     </div>
     <ul>
-      <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
-      <li><a href="siswa.html"><i class="fas fa-users"></i> Data Siswa</a></li>
-      <li><a href="absensi.html"><i class="fas fa-calendar-check"></i> Absensi</a></li>
-      <li><a href="administrasi.html"><i class="fas fa-folder-open"></i> Administrasi</a></li>
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="siswa.html">Data Siswa</a></li>
+      <li><a href="absensi.html">Absensi</a></li>
+      <li><a href="administrasi.html">Administrasi</a></li>
     </ul>
   </nav>
 
@@ -106,7 +107,6 @@
 
   <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
 
-  <!-- Script Supabase -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
@@ -154,7 +154,6 @@
               <tr>
                 <th>No</th><th>Nama</th><th>NISN</th>
                 ${tanggalHeader}
-                <th>Tanda Tangan Guru</th>
               </tr>
             </thead>
             <tbody>
@@ -164,14 +163,12 @@
                   <td>${s.Nama}</td>
                   <td>${s.NISN}</td>
                   ${Array.from({length:31},()=>'<td></td>').join('')}
-                  <td></td>
                 </tr>`).join('')}
             </tbody>
           </table>
         `
       }
 
-      // Render default kelas pertama
       if (kelasSet.length > 0) {
         renderAbsensi(kelasSet[0])
         filterSelect.onchange = () => renderAbsensi(filterSelect.value)
