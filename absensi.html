@@ -27,14 +27,8 @@
       gap: 10px;
       margin-left: 20px;
     }
-    nav .logo img {
-      width: 40px;
-      height: 40px;
-    }
-    nav .logo span {
-      font-weight: bold;
-      font-size: 16px;
-    }
+    nav .logo img { width: 40px; height: 40px; }
+    nav .logo span { font-weight: bold; font-size: 16px; }
     nav ul {
       list-style: none;
       display: flex;
@@ -50,21 +44,13 @@
 
     .container { padding: 100px 20px 20px; }
 
-    .info-guru {
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
-    .info-guru table {
-      margin: 10px auto;
-      border-collapse: collapse;
-    }
+    .info-guru { margin-bottom: 20px; font-size: 14px; }
+    .info-guru table { margin: 10px auto; border-collapse: collapse; }
     .info-guru td { padding: 4px 8px; }
 
-    .toolbar {
-      margin-bottom: 20px;
-      text-align: center;
-    }
+    .toolbar { margin-bottom: 20px; text-align: center; }
 
+    /* Tabel absensi kotak-kotak */
     .tabel-absensi {
       width: 100%;
       border-collapse: collapse;
@@ -73,7 +59,7 @@
     }
     .tabel-absensi th, .tabel-absensi td {
       border: 1px solid #000;
-      padding: 6px;
+      padding: 4px;
       text-align: center;
     }
     .tabel-absensi th {
@@ -82,6 +68,11 @@
     }
     .tabel-absensi th:nth-child(2) { width: 220px; }
     .tabel-absensi th:nth-child(3) { width: 120px; }
+    .tabel-absensi th:nth-child(n+4),
+    .tabel-absensi td:nth-child(n+4) {
+      width: 25px;
+      height: 25px;
+    }
 
     .ttd-section {
       margin-top: 40px;
@@ -217,7 +208,10 @@
           <table class="tabel-absensi">
             <thead>
               <tr>
-                <th>No</th><th>Nama</th><th>NISN</th><th colspan="15">Tanggal</th>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Nama Peserta Didik</th>
+                <th rowspan="2">NISN</th>
+                <th colspan="15">Tanggal</th>
               </tr>
               <tr>${Array.from({length:15},()=>'<th></th>').join('')}</tr>
             </thead>
