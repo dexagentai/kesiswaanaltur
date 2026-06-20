@@ -2,108 +2,18 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Absensi Siswa - SMK AL HUDA TURALAK</title>
+  <title>Absensi Siswa</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome untuk ikon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body { background: #fff; font-family: Arial, sans-serif; }
-
-    /* Navbar seragam */
-    nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: #2f855a;
-      color: white;
-      padding: 10px;
-      z-index: 1000;
-    }
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 30px;
-      margin: 0;
-      padding: 0;
-      justify-content: center;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav a:hover { text-decoration: underline; }
-
-    .container { padding: 100px 20px 20px; }
-
-    .kop-sekolah {
-      text-align: center;
-      border-bottom: 2px solid #000;
-      margin-bottom: 10px;
-      position: relative;
-    }
-    .kop-sekolah img {
-      position: absolute;
-      left: 40px;
-      top: 10px;
-      width: 80px;
-    }
-    .kop-sekolah h2, .kop-sekolah h3, .kop-sekolah p {
-      margin: 0;
-      line-height: 1.3;
-    }
-    .kop-sekolah h2 { font-size: 20px; font-weight: bold; }
-    .kop-sekolah h3 { font-size: 18px; font-weight: bold; }
-    .kop-sekolah p { font-size: 12px; }
-
-    .info-guru { margin-top: 10px; font-size: 14px; }
-    .info-guru table { margin: 10px auto; border-collapse: collapse; }
-    .info-guru td { padding: 4px 8px; }
-
-    .tabel-absensi {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-    .tabel-absensi th, .tabel-absensi td {
-      border: 1px solid #000;
-      padding: 4px;
-      text-align: center;
-    }
-    .tabel-absensi th {
-      background: #c6f6d5;
-      color: #006400;
-    }
-    .tabel-absensi th:nth-child(2) { width: 200px; }
-    .tabel-absensi th:nth-child(3) { width: 120px; }
-
-    .ttd-section {
-      margin-top: 40px;
-      width: 90%;
-      font-size: 13px;
-    }
-    .ttd-section table { width: 100%; border-collapse: collapse; }
-    .ttd-section td {
-      padding: 6px;
-      text-align: center;
-      vertical-align: bottom;
-      height: 60px;
-    }
-    .ttd-section .nama {
-      border-top: 1px solid #000;
-      display: inline-block;
-      padding-top: 4px;
-    }
-
-    @media print {
-      nav, .toolbar, footer { display: none; }
-      body { margin: 0; }
-    }
-  </style>
 </head>
 <body>
-  <!-- Navbar seragam -->
+  <!-- Navbar modern seragam -->
   <nav>
+    <div class="logo">
+      <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
+      <span>SMK AL HUDA TURALAK</span>
+    </div>
     <ul>
       <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
       <li><a href="siswa.html"><i class="fas fa-users"></i> Data Siswa</a></li>
@@ -113,17 +23,7 @@
   </nav>
 
   <div class="container">
-    <div class="kop-sekolah">
-      <img src="logo-smk.png" alt="Logo SMK">
-      <h2>YAYASAN AL HUDA TURALAK</h2>
-      <h3>SEKOLAH MENENGAH KEJURUAN (SMK) AL HUDA TURALAK</h3>
-      <p>STATUS TERAKREDITASI A</p>
-      <p>NPSN. 20254634 NISS. 322021431023</p>
-      <p>Jl. Sukamaju No. 11 Sukamaju Baregbeg Ciamis 46251 Telp/Fax (0265) 721536 Jawa Barat</p>
-      <p>Email: smk.alhuda.trk@gmail.com Website: http://smkalhudaturalak-cms.sch.id</p>
-      <hr>
-      <h4>DAFTAR HADIR PESERTA DIDIK<br>SMK AL HUDA TURALAK</h4>
-    </div>
+    <h2>Absensi Siswa</h2>
 
     <div class="info-guru">
       <table>
@@ -133,7 +33,7 @@
       </table>
     </div>
 
-    <div class="toolbar" style="text-align:center;">
+    <div class="toolbar">
       <label for="filter-kelas">Pilih Kelas/Jurusan:</label>
       <select id="filter-kelas"></select>
       <button class="btn-green" onclick="window.print()">Cetak Absensi</button>
@@ -160,11 +60,12 @@
 
   <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
 
+  <!-- Script koneksi Supabase -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
     const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // terbaru
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     async function loadAbsensi() {
@@ -174,15 +75,19 @@
         .order('nama', { ascending: true })
 
       if (error) {
-        console.error(error)
+        console.error('Error ambil data:', error)
+        document.getElementById('absensi-container').innerHTML =
+          `<p style="color:red;">Gagal ambil data dari Supabase: ${error.message}</p>`
         return
       }
 
+      // filter hanya TRK
       const siswaTRK = data.filter(s => s.pangkalan?.toUpperCase() === 'TRK')
       const kelasSet = [...new Set(siswaTRK.map(s => s.kelas_jurusan).filter(Boolean))]
       const filterSelect = document.getElementById('filter-kelas')
       filterSelect.innerHTML = ''
 
+      // isi dropdown kelas
       kelasSet.forEach(k => {
         const opt = document.createElement('option')
         opt.value = k
@@ -215,7 +120,7 @@
                   <td>${s.nama}</td>
                   <td>${s.nisn}</td>
                   ${Array.from({length:15},()=>'<td></td>').join('')}
-              </tr>`).join('')}
+                </tr>`).join('')}
             </tbody>
           </table>
         `
@@ -228,7 +133,7 @@
       }
     }
 
-    // panggil fungsi loadAbsensi saat halaman dibuka
+    // panggil fungsi saat halaman dibuka
     loadAbsensi()
   </script>
 </body>
