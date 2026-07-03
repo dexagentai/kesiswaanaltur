@@ -83,33 +83,29 @@
     </div>
   </div>
 
-  <!-- Dua kolom: J -->
   <div class="section-wrapper">
-  <!-- Total Siswa Aktif -->
-  <div class="section-card">
+    <!-- Total Siswa Aktif -->
+    <div class="section-card">
       <h3><i class="fas fa-user-check"></i> Total Siswa Aktif</h3>
-  <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-    <thead>
-      <tr><th>Kelas</th><th>L</th><th>P</th></tr>
-    </thead>
-    <tbody id="tabel-aktif"></tbody>
-  </table>
-</div>
+      <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+        <thead>
+          <tr><th>Kelas</th><th>L</th><th>P</th></tr>
+        </thead>
+        <tbody id="tabel-aktif"></tbody>
+      </table>
+    </div>
 
+    <!-- Data Alumni -->
     <div class="section-card alumni-section">
       <h3><i class="fas fa-graduation-cap"></i> Data Alumni per Tahun</h3>
       <table class="tabel-alumni" id="tabel-alumni">
         <thead><tr><th>Tahun</th><th>Jumlah Alumni</th></tr></thead>
         <tbody></tbody>
       </table>
-      <canvas id="chartAlumni" width="400" height="200" style="margin-top:20px;"></canvas>
     </div>
   </div>
-
+  
   <footer>© 2026 SMK AL HUDA TURALAK — Sistem Kesiswaan</footer>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Script Supabase -->
 <script type="module">
@@ -168,40 +164,6 @@
                         </tr>`
       tbodyAktif.insertAdjacentHTML('beforeend', totalRow)
     }
-
-    // === Alumni per tahun dari kolom tahun_lulus + jumlah_alumni ===
-    const alumniPerTahun = alumniRekap.map(a => ({
-      tahun: a.tahun_lulus,
-      jumlah: parseInt(a.jumlah_alumni)
-    })).sort((a,b) => b.tahun - a.tahun)
-
-    const tbody = document.querySelector('#tabel-alumni tbody')
-    tbody.innerHTML = ''
-    alumniPerTahun.forEach(a => {
-      const row = `<tr><td>${a.tahun}</td><td>${a.jumlah}</td></tr>`
-      tbody.insertAdjacentHTML('beforeend', row)
-    })
-    // Chart Alumni
-    const ctx = document.getElementById('chartAlumni')
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: alumniPerTahun.map(a => a.tahun),
-        datasets: [{
-          label: 'Jumlah Alumni',
-          data: alumniPerTahun.map(a => a.jumlah),
-          backgroundColor: '#48bb78'
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          title: { display: true, text: 'Grafik Alumni per Tahun', color: '#006400' }
-        },
-        scales: { y: { beginAtZero: true } }
-      }
-    })
   }
 
   loadDashboard()
