@@ -111,8 +111,8 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Script Supabase -->
- <script type="module">
+<!-- Script Supabase -->
+<script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
   const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY'
@@ -122,13 +122,16 @@
     const { data, error } = await supabase.from('siswa').select('*')
     if (error) { console.error(error); return }
 
-    // Hitung total siswa
-    const totalSiswa = data.length
-    const siswaTRK = data.filter(s => s.pangkalan === 'TRK').length
-    const jurusanSet = new Set(data.map(s => s.Kelas_jurusan))
-    const totalJurusan = jurusanSet.size
-    const totalAlumni = data.filter(s => s.status === 'Alumni').length
+    // === Hitung total siswa aktif ===
     const siswaAktif = data.filter(s => s.status === 'Aktif')
+    const totalSiswa = siswaAktif.length
+    const siswaTRK = siswaAktif.filter(s => s.pangkalan === 'TRK').length
+    const jurusanSet = new Set(siswaAktif.map(s => s.Kelas_jurusan))
+    const totalJurusan = jurusanSet.size
+
+    // === Total Alumni dari kolom jumlah_alumni ===
+    const alumniRekap = data.filter(s => s.jumlah_alumni !== null)
+    const totalAlumni = alumniRekap.reduce((sum, a) => sum + a.jumlah_alumni, 0)
 
     // Update kartu
     document.getElementById('total-siswa').textContent = totalSiswa
@@ -148,17 +151,21 @@
         const row = `<tr><td>${k}</td><td>${laki}</td><td>${perempuan}</td></tr>`
         tbodyAktif.insertAdjacentHTML('beforeend', row)
       })
+
+      // Tambahkan total keseluruhan L & P
+      const totalL = siswaAktif.filter(s => s.JK === 'L').length
+      const totalP = siswaAktif.filter(s => s.JK === 'P').length
+      const totalRow = `<tr style="font-weight:bold; background:#f0fff4;">
+                          <td>Total</td><td>${totalL}</td><td>${totalP}</td>
+                        </tr>`
+      tbodyAktif.insertAdjacentHTML('beforeend', totalRow)
     }
 
-    // === Data alumni per tahun (sementara manual) ===
-    const alumniPerTahun = [
-      { tahun: 2025, jumlah: 223 },
-      { tahun: 2024, jumlah: 270 },
-      { tahun: 2023, jumlah: 210 },
-      { tahun: 2022, jumlah: 190 },
-      { tahun: 2021, jumlah: 240 },
-      { tahun: 2020, jumlah: 298 }
-    ]
+    // === Alumni per tahun dari kolom tahun_lulus + jumlah_alumni ===
+    const alumniPerTahun = alumniRekap.map(a => ({
+      tahun: a.tahun_lulus,
+      jumlah: a.jumlah_alumni
+    })).sort((a,b) => b.tahun - a.tahun)
 
     const tbody = document.querySelector('#tabel-alumni tbody')
     tbody.innerHTML = ''
