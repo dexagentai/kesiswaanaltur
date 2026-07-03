@@ -87,10 +87,14 @@
   <div class="section-wrapper">
   <!-- Total Siswa Aktif -->
   <div class="section-card">
-    <h3><i class="fas fa-user-check"></i> Total Siswa Aktif</h3>
-    <p style="font-size:40px; font-weight:bold; color:#006400;" id="siswa-aktif">0</p>
-    <p style="color:#555;">Jumlah siswa yang masih aktif terdaftar</p>
-  </div>
+      <h3><i class="fas fa-user-check"></i> Total Siswa Aktif</h3>
+  <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+    <thead>
+      <tr><th>Kelas</th><th>L</th><th>P</th></tr>
+    </thead>
+    <tbody id="tabel-aktif"></tbody>
+  </table>
+</div>
 
     <div class="section-card alumni-section">
       <h3><i class="fas fa-graduation-cap"></i> Data Alumni per Tahun</h3>
@@ -108,7 +112,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Script Supabase -->
-  <script type="module">
+ <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
   const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY'
@@ -120,22 +124,33 @@
 
     // Hitung total siswa
     const totalSiswa = data.length
-    const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
-    const totalTRK = siswaTRK.length
+    const siswaTRK = data.filter(s => s.pangkalan === 'TRK').length
     const jurusanSet = new Set(data.map(s => s.Kelas_jurusan))
     const totalJurusan = jurusanSet.size
-    const alumni = data.filter(s => s.status === 'Alumni')
-    const totalAlumni = alumni.length
-    const siswaAktif = data.filter(s => s.status === 'Aktif').length
+    const totalAlumni = data.filter(s => s.status === 'Alumni').length
+    const siswaAktif = data.filter(s => s.status === 'Aktif')
 
     // Update kartu
     document.getElementById('total-siswa').textContent = totalSiswa
-    document.getElementById('siswa-trk').textContent = totalTRK
+    document.getElementById('siswa-trk').textContent = siswaTRK
     document.getElementById('jurusan').textContent = totalJurusan
     document.getElementById('total-alumni').textContent = totalAlumni
-    document.getElementById('siswa-aktif').textContent = siswaAktif
+    document.getElementById('siswa-aktif').textContent = siswaAktif.length
 
-    // Contoh data alumni per tahun (bisa diganti query Supabase tabel alumni)
+    // === Hitung siswa aktif per JK & kelas ===
+    const kelasList = ['X','XI','XII']
+    const tbodyAktif = document.getElementById('tabel-aktif')
+    if (tbodyAktif) {
+      tbodyAktif.innerHTML = ''
+      kelasList.forEach(k => {
+        const laki = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.jk === 'L').length
+        const perempuan = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.jk === 'P').length
+        const row = `<tr><td>${k}</td><td>${laki}</td><td>${perempuan}</td></tr>`
+        tbodyAktif.insertAdjacentHTML('beforeend', row)
+      })
+    }
+
+    // === Data alumni per tahun (sementara manual) ===
     const alumniPerTahun = [
       { tahun: 2025, jumlah: 223 },
       { tahun: 2024, jumlah: 270 },
