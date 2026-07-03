@@ -85,17 +85,12 @@
 
   <!-- Dua kolom: Jurusan & Alumni -->
   <div class="section-wrapper">
-    <div class="section-card jurusan-list">
-      <h3><i class="fas fa-list"></i> Daftar Jurusan & Kaprog</h3>
-      <ul>
-        <li>LPS : Layanan Perbankan Syariah — Kaprog Ade Firman, S.E</li>
-        <li>MPLB : Manajemen Perkantoran Layanan Bisnis — Kaprog …</li>
-        <li>DKV : Desain Komunikasi Visual — Kaprog …</li>
-        <li>TKJ : Teknik Komputer & Jaringan — Kaprog …</li>
-        <li>TKRO : Teknik Kendaraan Ringan Otomotif — Kaprog …</li>
-        <li>TF : Teknik Furniture — Kaprog …</li>
-      </ul>
-    </div>
+  <!-- Total Siswa Aktif -->
+  <div class="section-card">
+    <h3><i class="fas fa-user-check"></i> Total Siswa Aktif</h3>
+    <p style="font-size:40px; font-weight:bold; color:#006400;" id="siswa-aktif">0</p>
+    <p style="color:#555;">Jumlah siswa yang masih aktif terdaftar</p>
+  </div>
 
     <div class="section-card alumni-section">
       <h3><i class="fas fa-graduation-cap"></i> Data Alumni per Tahun</h3>
@@ -114,30 +109,73 @@
 
   <!-- Script Supabase -->
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-    const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY'
-    const supabase = createClient(supabaseUrl, supabaseKey)
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+  const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY'
+  const supabase = createClient(supabaseUrl, supabaseKey)
 
-    async function loadDashboard() {
-      const { data, error } = await supabase.from('siswa').select('*')
-      if (error) { console.error(error); return }
+  async function loadDashboard() {
+    const { data, error } = await supabase.from('siswa').select('*')
+    if (error) { console.error(error); return }
 
-      // Hitung total siswa
-      const totalSiswa = data.length
-      const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
-      const totalTRK = siswaTRK.length
-      const jurusanSet = new Set(data.map(s => s.Kelas_jurusan))
-      const totalJurusan = jurusanSet.size
-      const alumni = data.filter(s => s.status === 'Alumni')
-      const totalAlumni = alumni.length
+    // Hitung total siswa
+    const totalSiswa = data.length
+    const siswaTRK = data.filter(s => s.pangkalan === 'TRK')
+    const totalTRK = siswaTRK.length
+    const jurusanSet = new Set(data.map(s => s.Kelas_jurusan))
+    const totalJurusan = jurusanSet.size
+    const alumni = data.filter(s => s.status === 'Alumni')
+    const totalAlumni = alumni.length
+    const siswaAktif = data.filter(s => s.status === 'Aktif').length
 
-      document.getElementById('total-siswa').textContent = totalSiswa
-      document.getElementById('siswa-trk').textContent = totalTRK
-      document.getElementById('jurusan').textContent = totalJurusan
-      document.getElementById('total-alumni').textContent = totalAlumni
-    }
-    loadDashboard()
+    // Update kartu
+    document.getElementById('total-siswa').textContent = totalSiswa
+    document.getElementById('siswa-trk').textContent = totalTRK
+    document.getElementById('jurusan').textContent = totalJurusan
+    document.getElementById('total-alumni').textContent = totalAlumni
+    document.getElementById('siswa-aktif').textContent = siswaAktif
+
+    // Contoh data alumni per tahun (bisa diganti query Supabase tabel alumni)
+    const alumniPerTahun = [
+      { tahun: 2025, jumlah: 223 },
+      { tahun: 2024, jumlah: 270 },
+      { tahun: 2023, jumlah: 210 },
+      { tahun: 2022, jumlah: 190 },
+      { tahun: 2021, jumlah: 240 },
+      { tahun: 2020, jumlah: 298 }
+    ]
+
+    const tbody = document.querySelector('#tabel-alumni tbody')
+    tbody.innerHTML = ''
+    alumniPerTahun.forEach(a => {
+      const row = `<tr><td>${a.tahun}</td><td>${a.jumlah}</td></tr>`
+      tbody.insertAdjacentHTML('beforeend', row)
+    })
+
+    // Chart Alumni
+    const ctx = document.getElementById('chartAlumni')
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: alumniPerTahun.map(a => a.tahun),
+        datasets: [{
+          label: 'Jumlah Alumni',
+          data: alumniPerTahun.map(a => a.jumlah),
+          backgroundColor: '#48bb78'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'Grafik Alumni per Tahun', color: '#006400' }
+        },
+        scales: { y: { beginAtZero: true } }
+      }
+    })
+  }
+
+  loadDashboard()
   </script>
 </body>
 </html>
