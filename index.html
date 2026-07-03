@@ -122,26 +122,28 @@
     const { data, error } = await supabase.from('siswa').select('*')
     if (error) { console.error(error); return }
 
-    // === Hitung total siswa aktif ===
-    const siswaAktif = data.filter(s => s.status === 'Aktif')
+    // Pisahkan data siswa aktif dan rekap alumni
+    const siswaAktif = data.filter(s => s.status !== 'Alumni' && !s.jumlah_alumni)
+    const alumniRekap = data.filter(s => s.status === 'Alumni' && s.jumlah_alumni)
+
+    // Hitung total siswa aktif
     const totalSiswa = siswaAktif.length
     const siswaTRK = siswaAktif.filter(s => s.pangkalan === 'TRK').length
     const jurusanSet = new Set(siswaAktif.map(s => s.Kelas_jurusan))
     const totalJurusan = jurusanSet.size
 
-    // === Total Alumni dari kolom jumlah_alumni ===
-    const alumniRekap = data.filter(s => s.jumlah_alumni !== null)
-    const totalAlumni = alumniRekap.reduce((sum, a) => sum + a.jumlah_alumni, 0)
+    // Hitung total alumni dari kolom jumlah_alumni
+    const totalAlumni = alumniRekap.reduce((sum, a) => sum + parseInt(a.jumlah_alumni), 0)
 
     // Update kartu
     document.getElementById('total-siswa').textContent = totalSiswa
     document.getElementById('siswa-trk').textContent = siswaTRK
     document.getElementById('jurusan').textContent = totalJurusan
     document.getElementById('total-alumni').textContent = totalAlumni
-    document.getElementById('siswa-aktif').textContent = siswaAktif.length
+    document.getElementById('siswa-aktif').textContent = totalSiswa
 
     // === Hitung siswa aktif per JK & kelas ===
-    const kelasList = ['X','XI','XII']
+    const kelasList = ['X','XI','XII','XIII']
     const tbodyAktif = document.getElementById('tabel-aktif')
     if (tbodyAktif) {
       tbodyAktif.innerHTML = ''
@@ -164,7 +166,7 @@
     // === Alumni per tahun dari kolom tahun_lulus + jumlah_alumni ===
     const alumniPerTahun = alumniRekap.map(a => ({
       tahun: a.tahun_lulus,
-      jumlah: a.jumlah_alumni
+      jumlah: parseInt(a.jumlah_alumni)
     })).sort((a,b) => b.tahun - a.tahun)
 
     const tbody = document.querySelector('#tabel-alumni tbody')
