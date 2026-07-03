@@ -143,8 +143,8 @@
     if (tbodyAktif) {
       tbodyAktif.innerHTML = ''
       kelasList.forEach(k => {
-        const laki = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.jk === 'L').length
-        const perempuan = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.jk === 'P').length
+        const laki = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.JK === 'L').length
+        const perempuan = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.JK === 'P').length
         const row = `<tr><td>${k}</td><td>${laki}</td><td>${perempuan}</td></tr>`
         tbodyAktif.insertAdjacentHTML('beforeend', row)
       })
