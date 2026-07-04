@@ -164,6 +164,25 @@
                         </tr>`
       tbodyAktif.insertAdjacentHTML('beforeend', totalRow)
     }
+      
+    // === Alumni per tahun dari kolom tahun_lulus + jumlah_alumni ===
+const alumniPerTahun = alumniRekap.map(a => ({
+  tahun: a.tahun_lulus,
+  jumlah: parseInt(a.jumlah_alumni)
+})).sort((a,b) => b.tahun - a.tahun)
+
+const tbodyAlumni = document.querySelector('#tabel-alumni tbody')
+tbodyAlumni.innerHTML = ''
+
+if (alumniPerTahun.length === 0) {
+  tbodyAlumni.innerHTML = `<tr><td colspan="2" style="color:#888;">Tidak ada data alumni</td></tr>`
+} else {
+  alumniPerTahun.forEach(a => {
+    const row = `<tr><td>${a.tahun}</td><td>${a.jumlah}</td></tr>`
+    tbodyAlumni.insertAdjacentHTML('beforeend', row)
+  })
+}
+
   }
 
   loadDashboard()
