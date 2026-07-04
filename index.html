@@ -114,16 +114,15 @@
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY'
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-    async function loadDashboard() {
+  async function loadDashboard() {
     const { data, error } = await supabase.from('siswa').select('*')
-    if (error) { console.error(error); return }
+    if (error) { console.error('Error ambil data:', error); return }
 
-    // === Debug log untuk cek isi data ===
     console.log('Data Supabase:', data)
 
-    // Pisahkan siswa aktif (baris biasa) dan rekap alumni (baris khusus)
-    const siswaAktif = data.filter(s => s.Nama !== 'Rekap Alumni')
-    const alumniRekap = data.filter(s => s.Nama === 'Rekap Alumni')
+    // Pisahkan siswa aktif dan rekap alumni
+    const siswaAktif = data.filter(s => s.Nama?.toLowerCase() !== 'rekap alumni')
+    const alumniRekap = data.filter(s => s.Nama?.toLowerCase() === 'rekap alumni')
 
     console.log('Siswa aktif:', siswaAktif)
     console.log('Alumni rekap:', alumniRekap)
@@ -135,57 +134,54 @@
     const totalJurusan = jurusanSet.size
 
     // Hitung total alumni dari kolom jumlah_alumni
-    const totalAlumni = alumniRekap.reduce((sum, a) => sum + parseInt(a.jumlah_alumni), 0)
+    const totalAlumni = alumniRekap.reduce((sum, a) => sum + (parseInt(a.jumlah_alumni) || 0), 0)
 
     // Update kartu
     document.getElementById('total-siswa').textContent = totalSiswa
     document.getElementById('siswa-trk').textContent = siswaTRK
     document.getElementById('jurusan').textContent = totalJurusan
     document.getElementById('total-alumni').textContent = totalAlumni
-    document.getElementById('siswa-aktif').textContent = totalSiswa
 
     // === Hitung siswa aktif per JK & kelas ===
-    const kelasList = ['X','XI','XII','XIII']
+    const kelasList = ['X', 'XI', 'XII', 'XIII']
     const tbodyAktif = document.getElementById('tabel-aktif')
-    if (tbodyAktif) {
-      tbodyAktif.innerHTML = ''
-      kelasList.forEach(k => {
-        const laki = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.JK === 'L').length
-        const perempuan = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.JK === 'P').length
-        const row = `<tr><td>${k}</td><td>${laki}</td><td>${perempuan}</td></tr>`
-        tbodyAktif.insertAdjacentHTML('beforeend', row)
-      })
+    tbodyAktif.innerHTML = ''
 
-      // Tambahkan total keseluruhan L & P
-      const totalL = siswaAktif.filter(s => s.JK === 'L').length
-      const totalP = siswaAktif.filter(s => s.JK === 'P').length
-      const totalRow = `<tr style="font-weight:bold; background:#f0fff4;">
-                          <td>Total</td><td>${totalL}</td><td>${totalP}</td>
-                        </tr>`
-      tbodyAktif.insertAdjacentHTML('beforeend', totalRow)
-    }
-      
+    kelasList.forEach(k => {
+      const laki = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.JK === 'L').length
+      const perempuan = siswaAktif.filter(s => s.Kelas_jurusan?.startsWith(k) && s.JK === 'P').length
+      const row = `<tr><td>${k}</td><td>${laki}</td><td>${perempuan}</td></tr>`
+      tbodyAktif.insertAdjacentHTML('beforeend', row)
+    })
+
+    // Tambahkan total keseluruhan L & P
+    const totalL = siswaAktif.filter(s => s.JK === 'L').length
+    const totalP = siswaAktif.filter(s => s.JK === 'P').length
+    const totalRow = `<tr style="font-weight:bold; background:#f0fff4;">
+                        <td>Total</td><td>${totalL}</td><td>${totalP}</td>
+                      </tr>`
+    tbodyAktif.insertAdjacentHTML('beforeend', totalRow)
+
     // === Alumni per tahun dari kolom tahun_lulus + jumlah_alumni ===
-const alumniPerTahun = alumniRekap.map(a => ({
-  tahun: a.tahun_lulus,
-  jumlah: parseInt(a.jumlah_alumni)
-})).sort((a,b) => b.tahun - a.tahun)
+    const alumniPerTahun = alumniRekap.map(a => ({
+      tahun: a.tahun_lulus || '-',
+      jumlah: parseInt(a.jumlah_alumni) || 0
+    })).sort((a, b) => b.tahun - a.tahun)
 
-const tbodyAlumni = document.querySelector('#tabel-alumni tbody')
-tbodyAlumni.innerHTML = ''
+    const tbodyAlumni = document.querySelector('#tabel-alumni tbody')
+    tbodyAlumni.innerHTML = ''
 
-if (alumniPerTahun.length === 0) {
-  tbodyAlumni.innerHTML = `<tr><td colspan="2" style="color:#888;">Tidak ada data alumni</td></tr>`
-} else {
-  alumniPerTahun.forEach(a => {
-    const row = `<tr><td>${a.tahun}</td><td>${a.jumlah}</td></tr>`
-    tbodyAlumni.insertAdjacentHTML('beforeend', row)
-  })
-}
-
+    if (alumniPerTahun.length === 0) {
+      tbodyAlumni.innerHTML = `<tr><td colspan="2" style="color:#888;">Tidak ada data alumni</td></tr>`
+    } else {
+      alumniPerTahun.forEach(a => {
+        const row = `<tr><td>${a.tahun}</td><td>${a.jumlah}</td></tr>`
+        tbodyAlumni.insertAdjacentHTML('beforeend', row)
+      })
+    }
   }
 
   loadDashboard()
-  </script>
+</script>
 </body>
 </html>
