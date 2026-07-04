@@ -61,6 +61,15 @@ nav ul li a:hover {
   transform: scale(1.05);
 }
 
+/* Highlight menu aktif */
+nav ul li a.active {
+  background: #ffffff22;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #c6f6d5;
+  font-weight: 700;
+}
+
 /* ===== Container ===== */
 .container {
   padding: 90px 20px 20px; /* lebih besar karena navbar fixed */
@@ -124,12 +133,15 @@ nav ul li a:hover {
 .tabel-siswa th,
 .tabel-siswa td {
   border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
+  padding: 8px 12px;
   font-size: 14px;
 }
 .tabel-siswa th {
   background: #c6f6d5;
+  text-align: center;
+}
+.tabel-siswa td {
+  text-align: left; /* Nama, NISN, Alamat rata kiri */
 }
 .tabel-siswa tbody tr:nth-child(even) {
   background: #f0fff4; /* zebra striping */
