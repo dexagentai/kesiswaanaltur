@@ -28,6 +28,36 @@
     .section-card { flex: 1 1 400px; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; }
     .section-card h3 { color: #006400; border-bottom: 2px solid #c6f6d5; padding-bottom: 5px; margin-bottom: 15px; text-align: center; }
 
+    /* === Perbaikan tampilan tabel siswa aktif === */
+#tabel-aktif {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#tabel-aktif th, #tabel-aktif td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+#tabel-aktif th {
+  background: #c6f6d5;
+  color: #006400;
+  font-weight: 600;
+}
+
+#tabel-aktif tbody tr:nth-child(even) {
+  background: #f0fff4;
+}
+
+#tabel-aktif tbody tr:last-child {
+  background: #e6ffed;
+  font-weight: bold;
+}
+
+
     .tabel-alumni { width: 100%; border-collapse: collapse; margin-top: 10px; }
     .tabel-alumni th, .tabel-alumni td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     .tabel-alumni th { background: #c6f6d5; color: #006400; }
