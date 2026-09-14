@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Surat Izin</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .container {
+      max-width: 700px;
+      margin: 80px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2f855a;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 20px;
+      background: #2f855a;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #276749;
+    }
+    .preview {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px dashed #aaa;
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Form Surat Izin</h2>
+    <form id="izinForm">
+      <label>Nama Siswa</label>
+      <input type="text" id="nama" required>
+
+      <label>Kelas</label>
+      <input type="text" id="kelas" required>
+
+      <label>Tanggal Izin</label>
+      <input type="date" id="tanggal" required>
+
+      <label>Alasan Izin</label>
+      <textarea id="alasan" rows="4" required></textarea>
+
+      <button type="button" onclick="buatSurat()">Buat Surat</button>
+    </form>
+
+    <div class="preview" id="preview" style="display:none;">
+      <h3>Preview Surat Izin</h3>
+      <p id="isiSurat"></p>
+    </div>
+  </div>
+
+  <script>
+    function buatSurat() {
+      const nama = document.getElementById('nama').value
+      const kelas = document.getElementById('kelas').value
+      const tanggal = document.getElementById('tanggal').value
+      const alasan = document.getElementById('alasan').value
+
+      const isi = `
+        Kepada Yth. Bapak/Ibu Guru Wali Kelas ${kelas},<br><br>
+        Dengan hormat,<br>
+        Saya yang bertanda tangan di bawah ini:<br>
+        Nama: ${nama}<br>
+        Kelas: ${kelas}<br><br>
+        Mengajukan izin tidak masuk sekolah pada tanggal ${tanggal} dikarenakan ${alasan}.<br><br>
+        Demikian surat izin ini saya buat dengan sebenar-benarnya.<br><br>
+        Hormat saya,<br>
+        ${nama}
+      `
+      document.getElementById('isiSurat').innerHTML = isi
+      document.getElementById('preview').style.display = 'block'
+    }
+  </script>
+</body>
+</html>
