@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Surat Keterangan Pindah</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      text-decoration: underline;
+      margin-bottom: 5px;
+    }
+    .kop {
+      text-align: center;
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+    .kop img {
+      width: 80px;
+      height: 80px;
+      position: absolute;
+      left: 60px;
+      top: 40px;
+    }
+    .form-section label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 20px;
+      background: #2f855a;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #276749;
+    }
+    .preview {
+      margin-top: 40px;
+      border-top: 2px solid #000;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="kop">
+      <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
+      <h3>YAYASAN AL HUDA TURALAK</h3>
+      <h3>SEKOLAH MENENGAH KEJURUAN (SMK)</h3>
+      <h2>AL HUDA TURALAK</h2>
+      <p>STATUS TERAKREDITASI A<br>
+      AKTA NOTARIS : No. 04/04/2014, SK MENKUMHAM RI No. AHU-0021060.AH.01.04.Tahun 2015<br>
+      Jl. Raya Turalak No. 35 Ds. Turalak Kec. Panawangan Kab. Ciamis 46255<br>
+      Email : smk.alhuda.turalak@gmail.com</p>
+      <hr style="border:2px solid #000;">
+    </div>
+
+    <h2>SURAT KETERANGAN PINDAH</h2>
+    <p style="text-align:center;">Nomor: <span id="nomor">52/SP/SMK-AH/VI/2026</span></p>
+
+    <div class="form-section">
+      <label>Nama Siswa</label>
+      <input type="text" id="nama">
+      <label>Jenis Kelamin</label>
+      <input type="text" id="jk">
+      <label>Agama</label>
+      <input type="text" id="agama">
+      <label>NISN</label>
+      <input type="text" id="nisn">
+      <label>Nama Orang Tua</label>
+      <input type="text" id="ortu">
+      <label>Kelas</label>
+      <input type="text" id="kelas">
+      <label>Nomor Induk Siswa</label>
+      <input type="text" id="induk">
+      <button type="button" onclick="buatSurat()">Buat Surat</button>
+    </div>
+
+    <div class="preview" id="preview" style="display:none;">
+      <p id="isiSurat"></p>
+      <br><br>
+      <p style="text-align:right;">Ciamis, <span id="tanggal"></span><br>Kepala Sekolah<br><br><br><b>IING APIPUDIN, S.Ag</b></p>
+    </div>
+  </div>
+
+  <script>
+    function buatSurat() {
+      const nama = document.getElementById('nama').value
+      const jk = document.getElementById('jk').value
+      const agama = document.getElementById('agama').value
+      const nisn = document.getElementById('nisn').value
+      const ortu = document.getElementById('ortu').value
+      const kelas = document.getElementById('kelas').value
+      const induk = document.getElementById('induk').value
+      const tanggal = new Date().toLocaleDateString('id-ID')
+
+      const isi = `
+        Yang bertanda tangan di bawah ini Kepala SMK Al-Huda Turalak Kabupaten Ciamis<br>
+        Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
+        1. Nama : ${nama}<br>
+        2. Jenis Kelamin : ${jk}<br>
+        3. Agama : ${agama}<br>
+        4. NISN : ${nisn}<br>
+        5. Nama Orang Tua : ${ortu}<br><br>
+        Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
+        1. Nama Sekolah : SMK AL HUDA TURALAK<br>
+        2. Nomor Induk Siswa : ${induk}<br>
+        3. Kelas : ${kelas}<br><br>
+        Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
+        Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
+      `
+      document.getElementById('isiSurat').innerHTML = isi
+      document.getElementById('tanggal').innerText = tanggal
+      document.getElementById('preview').style.display = 'block'
+    }
+  </script>
+</body>
+</html>
