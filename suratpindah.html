@@ -71,52 +71,65 @@
 
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-  // ============================
-  // LOAD DATA KELAS
-  // ============================
-  async function loadKelas() {
+// ============================
+// LOAD DATA KELAS
+// ============================
+async function loadKelas() {
+  const { data, error } = await supabase
+    .from('siswa')
+    .select('Kelas_jurusan')
+    .order('Kelas_jurusan', { ascending: true })
 
-    console.log('Mengambil data kelas...')
-
-    const { data, error } = await supabase
-      .from('siswa')
-      .select('Kelas_Jurusan')
-      .order('Kelas_Jurusan', { ascending: true })
-
-    console.log('Data kelas:', data)
-    console.log('Error kelas:', error)
-
-    if (error) {
-      alert('Gagal mengambil data kelas:\n' + error.message)
-      return
-    }
-
-    const kelasSet = [
-      ...new Set(
-        data
-          .map(s => s.Kelas_Jurusan)
-          .filter(k => k && k.trim() !== '')
-      )
-    ]
-
-    const kelasSelect = document.getElementById('kelas')
-
-    kelasSelect.innerHTML =
-      '<option value="">-- Pilih Kelas --</option>'
-
-    kelasSet.forEach(kelas => {
-
-      const opt = document.createElement('option')
-
-      opt.value = kelas
-      opt.textContent = kelas
-
-      kelasSelect.appendChild(opt)
-    })
-
-    console.log('Daftar kelas:', kelasSet)
+  if (error) {
+    alert('Gagal mengambil data kelas:\n' + error.message)
+    return
   }
 
+  const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan).filter(Boolean))]
+  const kelasSelect = document.getElementById('kelas')
+  kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>'
+  kelasSet.forEach(k => {
+    const opt = document.createElement('option')
+    opt.value = k
+    opt.textContent = k
+    kelasSelect.appendChild(opt)
+  })
+}
+
+// ============================
+// LOAD SISWA BERDASARKAN KELAS
+// ============================
+async function loadSiswa() {
+  const kelas = document.getElementById('kelas').value
+  const siswaSelect = document.getElementById('siswa')
+  siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
+  window.selectedSiswa = null
+  if (!kelas) return
+
+  const { data, error } = await supabase
+    .from('siswa')
+    .select('*')
+    .eq('Kelas_jurusan', kelas)
+    .order('Nama', { ascending: true })
+
+  if (error) {
+    alert('Gagal mengambil data siswa:\n' + error.message)
+    return
+  }
+
+  if (!data || data.length === 0) {
+    siswaSelect.innerHTML = '<option value="">-- Tidak ada siswa --</option>'
+    return
+  }
+
+  window.daftarSiswa = data
+  data.forEach((siswa, index) => {
+    const opt = document.createElement('option')
+    opt.value = index
+    opt.textContent = `${siswa.Nama} - ${siswa.NISN ?? ''}`
+    siswaSelect.appendChild(opt)
+  })
+}
 
   // ============================
   // LOAD SISWA BERDASARKAN KELAS
