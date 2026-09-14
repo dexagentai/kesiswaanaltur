@@ -121,28 +121,49 @@
 
   // buat surat
   function buatSurat() {
-    const s = window.selectedSiswa
-    if (!s) return alert("Pilih siswa terlebih dahulu.")
-    const tanggal = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
+  const s = window.selectedSiswa
+  if (!s) return alert("Pilih siswa terlebih dahulu.")
+  const tanggal = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
 
-    const isi = `
-      Yang bertanda tangan di bawah ini Kepala SMK Al-Huda Turalak Kabupaten Ciamis<br>
-      Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
-      1. Nama : ${s.Nama}<br>
-      2. Jenis Kelamin : ${s.JK}<br>
-      3. NISN : ${s.NISN}<br>
-      4. Alamat : ${s.Alamat}<br>
-      5. Tempat, Tanggal Lahir : ${s['Tempat Lahir']}, ${s['Tanggal Lahir']}<br><br>
-      Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
-      1. Nama Sekolah : SMK AL HUDA TURALAK<br>
-      2. Kelas : ${s.Kelas_jurusan}<br><br>
-      Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
-      Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
-    `
-    document.getElementById('isiSurat').innerHTML = isi
-    document.getElementById('tanggal').innerText = tanggal
-    document.getElementById('preview').style.display = 'block'
-  }
+  const isi = `
+    <p style="text-align:justify; line-height:1.6;">
+      Yang bertanda tangan di bawah ini, Kepala <b>SMK Al‑Huda Turalak Kabupaten Ciamis</b>,
+      dengan ini menerangkan bahwa:
+    </p>
+
+    <table style="width:100%; border-collapse:collapse; line-height:1.6;">
+      <tr><td style="width:180px;">Nama</td><td>: ${s.Nama}</td></tr>
+      <tr><td>Jenis Kelamin</td><td>: ${s.JK}</td></tr>
+      <tr><td>NISN</td><td>: ${s.NISN}</td></tr>
+      <tr><td>Alamat</td><td>: ${s.Alamat}</td></tr>
+      <tr><td>Tempat, Tanggal Lahir</td><td>: ${s['Tempat Lahir']}, ${s['Tanggal Lahir']}</td></tr>
+    </table>
+
+    <p style="text-align:justify; line-height:1.6; margin-top:10px;">
+      Adalah benar nama tersebut di atas tercatat sebagai siswa pada:
+    </p>
+
+    <table style="width:100%; border-collapse:collapse; line-height:1.6;">
+      <tr><td style="width:180px;">Nama Sekolah</td><td>: SMK AL HUDA TURALAK</td></tr>
+      <tr><td>Kelas</td><td>: ${s.Kelas_jurusan}</td></tr>
+    </table>
+
+    <p style="text-align:justify; line-height:1.6; margin-top:10px;">
+      Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan,
+      telah mengajukan pindah sekolah dengan alasan permintaan orang tua.
+    </p>
+
+    <p style="text-align:justify; line-height:1.6; margin-top:10px;">
+      Demikian Surat Keterangan Pindah ini dibuat dengan sebenar‑benarnya
+      dan dapat dipergunakan sebagaimana mestinya.
+    </p>
+  `
+
+  document.getElementById('isiSurat').innerHTML = isi
+  document.getElementById('tanggal').innerText = tanggal
+  document.getElementById('preview').style.display = 'block'
+}
+
 
   // expose ke window
   window.loadSiswa = loadSiswa
