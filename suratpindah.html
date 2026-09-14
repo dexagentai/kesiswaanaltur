@@ -44,17 +44,14 @@
 
     <div class="form-section">
       <label>Pilih Kelas</label>
-      <select id="kelas" onchange="loadSiswa()">
-        <option value="">-- Pilih Kelas --</option>
-        <option value="X">X</option>
-        <option value="XI">XI</option>
-        <option value="XII">XII</option>
-      </select>
+  <select id="kelas" onchange="loadSiswa()">
+    <option value="">-- Pilih Kelas --</option>
+  </select>
 
-      <label>Pilih Siswa</label>
-      <select id="siswa" onchange="isiData()">
-        <option value="">-- Pilih Siswa --</option>
-      </select>
+  <label>Pilih Siswa</label>
+  <select id="siswa" onchange="isiData()">
+    <option value="">-- Pilih Siswa --</option>
+  </select>
 
       <button type="button" onclick="buatSurat()">Buat Surat</button>
       <button type="button" onclick="window.print()">Cetak Surat</button>
@@ -73,36 +70,58 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY"
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-    async function loadSiswa() {
-      const kelas = document.getElementById('kelas').value
-      const { data, error } = await supabase
-        .from('siswa')
-        .select('id, Nama')
-        .like('Kelas_jurusan', kelas + '%')
+    // isi dropdown kelas otomatis
+async function loadKelas() {
+  const { data, error } = await supabase
+    .from('siswa')
+    .select('Kelas_jurusan')
 
-      if (error) { console.error(error); return }
-      const siswaSelect = document.getElementById('siswa')
-      siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
-      data.forEach(s => {
-        const opt = document.createElement('option')
-        opt.value = s.id
-        opt.textContent = s.Nama
-        siswaSelect.appendChild(opt)
-      })
-    }
+  if (error) { console.error(error); return }
 
-    async function isiData() {
-      const id = document.getElementById('siswa').value
-      if (!id) return
-      const { data, error } = await supabase
-        .from('siswa')
-        .select('*')
-        .eq('id', id)
-        .single()
+  const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan).filter(Boolean))]
+  const kelasSelect = document.getElementById('kelas')
+  kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>'
+  kelasSet.forEach(k => {
+    const opt = document.createElement('option')
+    opt.value = k
+    opt.textContent = k
+    kelasSelect.appendChild(opt)
+  })
+}
 
-      if (error) { console.error(error); return }
-      window.selectedSiswa = data
-    }
+// isi dropdown siswa sesuai kelas
+async function loadSiswa() {
+  const kelas = document.getElementById('kelas').value
+  const { data, error } = await supabase
+    .from('siswa')
+    .select('id, Nama')
+    .eq('Kelas_jurusan', kelas)
+
+  if (error) { console.error(error); return }
+
+  const siswaSelect = document.getElementById('siswa')
+  siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
+  data.forEach(s => {
+    const opt = document.createElement('option')
+    opt.value = s.id
+    opt.textContent = s.Nama
+    siswaSelect.appendChild(opt)
+  })
+}
+
+// ambil detail siswa
+async function isiData() {
+  const id = document.getElementById('siswa').value
+  if (!id) return
+  const { data, error } = await supabase
+    .from('siswa')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) { console.error(error); return }
+  window.selectedSiswa = data
+}
 
     function buatSurat() {
       const s = window.selectedSiswa
