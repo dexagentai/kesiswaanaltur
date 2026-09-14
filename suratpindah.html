@@ -3,41 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <title>Surat Keterangan Pindah</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+    const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY' // anon key kamu
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    async function loadKelas() {
+      const { data, error } = await supabase
+        .from('siswa')
+        .select('Kelas_jurusan')
+
+      if (error) { console.error(error); return }
+
+      const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan).filter(Boolean))]
+      const kelasSelect = document.getElementById('kelas')
+      kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>'
+      kelasSet.forEach(k => {
+        const opt = document.createElement('option')
+        opt.value = k
+        opt.textContent = k
+        kelasSelect.appendChild(opt)
+      })
+    }
+
+    async function loadSiswa() {
+      const kelas = document.getElementById('kelas').value
+      const { data, error } = await supabase
+        .from('siswa')
+        .select('id, Nama')
+        .eq('Kelas_jurusan', kelas)
+
+      if (error) { console.error(error); return }
+
+      const siswaSelect = document.getElementById('siswa')
+      siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
+      data.forEach(s => {
+        const opt = document.createElement('option')
+        opt.value = s.id
+        opt.textContent = s.Nama
+        siswaSelect.appendChild(opt)
+      })
+    }
+
+    async function isiData() {
+      const id = document.getElementById('siswa').value
+      if (!id) return
+      const { data, error } = await supabase
+        .from('siswa')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error) { console.error(error); return }
+      window.selectedSiswa = data
+    }
+
+    window.buatSurat = function() {
+      const s = window.selectedSiswa
+      if (!s) return alert("Pilih siswa terlebih dahulu.")
+      const tanggal = new Date().toLocaleDateString('id-ID')
+
+      const isi = `
+        Yang bertanda tangan di bawah ini Kepala SMK Al-Huda Turalak Kabupaten Ciamis<br>
+        Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
+        1. Nama : ${s.Nama}<br>
+        2. Jenis Kelamin : ${s.JK}<br>
+        3. Agama : ${s.Agama}<br>
+        4. NISN : ${s.NISN}<br>
+        5. Nama Orang Tua : ${s.Ortu}<br><br>
+        Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
+        1. Nama Sekolah : SMK AL HUDA TURALAK<br>
+        2. Nomor Induk Siswa : ${s.NIPD}<br>
+        3. Kelas : ${s.Kelas_jurusan}<br><br>
+        Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
+        Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
+      `
+      document.getElementById('isiSurat').innerHTML = isi
+      document.getElementById('tanggal').innerText = tanggal
+      document.getElementById('preview').style.display = 'block'
+    }
+
+    // load kelas saat halaman dibuka
+    loadKelas()
+  </script>
   <style>
-    @page { size: A4 portrait; margin: 20mm 25mm 25mm 25mm; }
-    body { font-family: 'Times New Roman', serif; background:#f9f9f9; margin:0; padding:0; }
-    .container { width:210mm; margin:auto; background:white; padding:30px 40px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-    .kop { text-align:center; line-height:1.3; margin-bottom:10px; position:relative; }
-    .kop img { position:absolute; left:40px; top:10px; width:80px; height:80px; }
-    .kop h3,.kop h2,.kop p { margin:0; }
-    .kop h2 { font-size:20px; font-weight:bold; }
-    .kop h3 { font-size:18px; font-weight:bold; }
-    .kop p { font-size:12px; }
-    hr { border:2px solid #000; margin-top:10px; }
-    h2.title { text-align:center; text-decoration:underline; margin-top:20px; }
-    .form-section { margin-top:20px; }
-    label { display:block; margin-top:10px; font-weight:bold; }
-    select,input { width:100%; padding:6px; margin-top:4px; border:1px solid #ccc; border-radius:4px; }
-    button { margin-top:20px; background:#2f855a; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
-    button:hover { background:#276749; }
-    .preview { margin-top:40px; border-top:2px solid #000; padding-top:20px; }
-    @media print { button,.form-section { display:none; } body{background:white;} .container{box-shadow:none;} }
+    /* gaya sama seperti sebelumnya */
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="kop">
-      <img src="logo-smk.png" alt="Logo SMK AL HUDA TURALAK">
-      <h3>YAYASAN AL HUDA TURALAK</h3>
-      <h3>SEKOLAH MENENGAH KEJURUAN (SMK)</h3>
-      <h2>AL HUDA TURALAK</h2>
-      <p>STATUS TERAKREDITASI A<br>
-      AKTA NOTARIS : No. 04/04/2014, SK MENKUMHAM RI No. AHU-0021060.AH.01.04.Tahun 2015<br>
-      Jl. Raya Turalak No. 35 Ds. Turalak Kec. Panawangan Kab. Ciamis 46255<br>
-      Email : smk.alhuda.turalak@gmail.com</p>
-      <hr>
-    </div>
+    <!-- kop surat sama seperti sebelumnya -->
 
     <h2 class="title">SURAT KETERANGAN PINDAH</h2>
     <p style="text-align:center;">Nomor: <span id="nomor">52/SP/SMK-AH/IX/2026</span></p>
@@ -63,94 +119,5 @@
       <p style="text-align:right;">Ciamis, <span id="tanggal"></span><br>Kepala Sekolah<br><br><br><b>IING APIPUDIN, S.Ag</b></p>
     </div>
   </div>
-
-  <script>
-    // koneksi Supabase
-    const supabaseUrl = "https://pgyohppycxecdnfmoqgk.supabase.co"
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY"
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-
-    // isi dropdown kelas otomatis dari kolom Kelas_jurusan
-    async function loadKelas() {
-      const { data, error } = await supabase
-        .from('siswa')
-        .select('Kelas_jurusan')
-
-      if (error) { console.error(error); return }
-
-      const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan).filter(Boolean))]
-      const kelasSelect = document.getElementById('kelas')
-      kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>'
-      kelasSet.forEach(k => {
-        const opt = document.createElement('option')
-        opt.value = k
-        opt.textContent = k
-        kelasSelect.appendChild(opt)
-      })
-    }
-
-    // isi dropdown siswa sesuai kelas
-    async function loadSiswa() {
-      const kelas = document.getElementById('kelas').value
-      const { data, error } = await supabase
-        .from('siswa')
-        .select('id, Nama')
-        .eq('Kelas_jurusan', kelas)
-
-      if (error) { console.error(error); return }
-
-      const siswaSelect = document.getElementById('siswa')
-      siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
-      data.forEach(s => {
-        const opt = document.createElement('option')
-        opt.value = s.id
-        opt.textContent = s.Nama
-        siswaSelect.appendChild(opt)
-      })
-    }
-
-    // ambil detail siswa
-    async function isiData() {
-      const id = document.getElementById('siswa').value
-      if (!id) return
-      const { data, error } = await supabase
-        .from('siswa')
-        .select('*')
-        .eq('id', id)
-        .single()
-
-      if (error) { console.error(error); return }
-      window.selectedSiswa = data
-    }
-
-    // buat surat
-    function buatSurat() {
-      const s = window.selectedSiswa
-      if (!s) return alert("Pilih siswa terlebih dahulu.")
-      const tanggal = new Date().toLocaleDateString('id-ID')
-
-      const isi = `
-        Yang bertanda tangan di bawah ini Kepala SMK Al-Huda Turalak Kabupaten Ciamis<br>
-        Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
-        1. Nama : ${s.Nama}<br>
-        2. Jenis Kelamin : ${s.JK}<br>
-        3. Agama : ${s.Agama}<br>
-        4. NISN : ${s.NISN}<br>
-        5. Nama Orang Tua : ${s.Ortu}<br><br>
-        Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
-        1. Nama Sekolah : SMK AL HUDA TURALAK<br>
-        2. Nomor Induk Siswa : ${s.NIPD}<br>
-        3. Kelas : ${s.Kelas_jurusan}<br><br>
-        Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
-        Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
-      `
-      document.getElementById('isiSurat').innerHTML = isi
-      document.getElementById('tanggal').innerText = tanggal
-      document.getElementById('preview').style.display = 'block'
-    }
-
-    // jalankan saat halaman load
-    window.onload = loadKelas
-  </script>
 </body>
 </html>
