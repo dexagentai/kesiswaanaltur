@@ -90,23 +90,24 @@
 
     // isi dropdown siswa sesuai kelas
     async function loadSiswa() {
-      const kelas = document.getElementById('kelas').value
-      const { data, error } = await supabase
-        .from('siswa')
-        .select('id, Nama')
-        .ilike('Kelas_jurusan', `%${kelas}%`) // biar gak sensitif huruf besar/kecil
+  const kelas = document.getElementById('kelas').value
+  const { data, error } = await supabase
+    .from('siswa')
+    .select('Nama, Kelas_Jurusan')
+    .eq('Kelas_Jurusan', kelas) // huruf besar J
 
-      if (error) { console.error(error); return }
+  if (error) { console.error(error); return }
 
-      const siswaSelect = document.getElementById('siswa')
-      siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
-      data.forEach(s => {
-        const opt = document.createElement('option')
-        opt.value = s.id
-        opt.textContent = s.Nama
-        siswaSelect.appendChild(opt)
-      })
-    }
+  const siswaSelect = document.getElementById('siswa')
+  siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
+  data.forEach(s => {
+    const opt = document.createElement('option')
+    opt.value = s.Nama
+    opt.textContent = s.Nama
+    siswaSelect.appendChild(opt)
+  })
+}
+
 
     // ambil detail siswa
     async function isiData() {
