@@ -73,11 +73,11 @@
     async function loadKelas() {
       const { data, error } = await supabase
         .from('siswa')
-        .select('Kelas_jurusan')
+        .select('Kelas_Jurusan')
 
       if (error) { console.error(error); return }
 
-      const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan).filter(Boolean))]
+      const kelasSet = [...new Set(data.map(s => s.Kelas_Jurusan).filter(Boolean))]
       const kelasSelect = document.getElementById('kelas')
       kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>'
       kelasSet.forEach(k => {
@@ -90,33 +90,32 @@
 
     // isi dropdown siswa sesuai kelas
     async function loadSiswa() {
-  const kelas = document.getElementById('kelas').value
-  const { data, error } = await supabase
-    .from('siswa')
-    .select('Nama, Kelas_Jurusan')
-    .eq('Kelas_Jurusan', kelas) // huruf besar J
+      const kelas = document.getElementById('kelas').value
+      const { data, error } = await supabase
+        .from('siswa')
+        .select('Nama, Kelas_Jurusan')
+        .eq('Kelas_Jurusan', kelas)
 
-  if (error) { console.error(error); return }
+      if (error) { console.error(error); return }
 
-  const siswaSelect = document.getElementById('siswa')
-  siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
-  data.forEach(s => {
-    const opt = document.createElement('option')
-    opt.value = s.Nama
-    opt.textContent = s.Nama
-    siswaSelect.appendChild(opt)
-  })
-}
-
+      const siswaSelect = document.getElementById('siswa')
+      siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
+      data.forEach(s => {
+        const opt = document.createElement('option')
+        opt.value = s.Nama
+        opt.textContent = s.Nama
+        siswaSelect.appendChild(opt)
+      })
+    }
 
     // ambil detail siswa
     async function isiData() {
-      const id = document.getElementById('siswa').value
-      if (!id) return
+      const nama = document.getElementById('siswa').value
+      if (!nama) return
       const { data, error } = await supabase
         .from('siswa')
         .select('*')
-        .eq('id', id)
+        .eq('Nama', nama)
         .single()
 
       if (error) { console.error(error); return }
@@ -134,13 +133,12 @@
         Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
         1. Nama : ${s.Nama}<br>
         2. Jenis Kelamin : ${s.JK}<br>
-        3. Agama : ${s.Agama}<br>
-        4. NISN : ${s.NISN}<br>
-        5. Nama Orang Tua : ${s.Ortu}<br><br>
+        3. NISN : ${s.NISN}<br>
+        4. Alamat : ${s.Alamat}<br>
+        5. Tempat, Tanggal Lahir : ${s['Tempat Lahir']}, ${s['Tanggal Lahir']}<br><br>
         Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
         1. Nama Sekolah : SMK AL HUDA TURALAK<br>
-        2. Nomor Induk Siswa : ${s.NIPD}<br>
-        3. Kelas : ${s.Kelas_jurusan}<br><br>
+        2. Kelas : ${s.Kelas_Jurusan}<br><br>
         Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
         Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
       `
@@ -148,6 +146,10 @@
       document.getElementById('tanggal').innerText = tanggal
       document.getElementById('preview').style.display = 'block'
     }
+
+    // expose fungsi ke window supaya bisa dipanggil dari HTML
+    window.loadSiswa = loadSiswa
+    window.isiData = isiData
 
     // jalankan saat halaman load
     loadKelas()
