@@ -3,45 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <title>Surat Keterangan Pindah</title>
-  <link rel="stylesheet" href="style.css">
   <style>
+    @page {
+      size: A4 portrait;
+      margin: 20mm 25mm 25mm 25mm;
+    }
     body {
       font-family: 'Times New Roman', serif;
       background: #f9f9f9;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
     .container {
-      max-width: 800px;
+      width: 210mm;
       margin: auto;
       background: white;
-      padding: 40px;
-      border-radius: 8px;
+      padding: 30px 40px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      text-decoration: underline;
-      margin-bottom: 5px;
     }
     .kop {
       text-align: center;
       line-height: 1.3;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      position: relative;
     }
     .kop img {
+      position: absolute;
+      left: 40px;
+      top: 10px;
       width: 80px;
       height: 80px;
-      position: absolute;
-      left: 60px;
-      top: 40px;
     }
-    .form-section label {
+    .kop h3, .kop h2, .kop p {
+      margin: 0;
+    }
+    .kop h2 {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .kop h3 {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .kop p {
+      font-size: 12px;
+    }
+    hr {
+      border: 2px solid #000;
+      margin-top: 10px;
+    }
+    h2.title {
+      text-align: center;
+      text-decoration: underline;
+      margin-top: 20px;
+    }
+    .form-section {
+      margin-top: 20px;
+    }
+    label {
       display: block;
       margin-top: 10px;
       font-weight: bold;
     }
-    input {
+    select, input {
       width: 100%;
       padding: 6px;
       margin-top: 4px;
@@ -66,6 +90,17 @@
       border-top: 2px solid #000;
       padding-top: 20px;
     }
+    @media print {
+      button, .form-section {
+        display: none;
+      }
+      body {
+        background: white;
+      }
+      .container {
+        box-shadow: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -79,28 +114,28 @@
       AKTA NOTARIS : No. 04/04/2014, SK MENKUMHAM RI No. AHU-0021060.AH.01.04.Tahun 2015<br>
       Jl. Raya Turalak No. 35 Ds. Turalak Kec. Panawangan Kab. Ciamis 46255<br>
       Email : smk.alhuda.turalak@gmail.com</p>
-      <hr style="border:2px solid #000;">
+      <hr>
     </div>
 
-    <h2>SURAT KETERANGAN PINDAH</h2>
-    <p style="text-align:center;">Nomor: <span id="nomor">52/SP/SMK-AH/VI/2026</span></p>
+    <h2 class="title">SURAT KETERANGAN PINDAH</h2>
+    <p style="text-align:center;">Nomor: <span id="nomor">52/SP/SMK-AH/IX/2026</span></p>
 
     <div class="form-section">
-      <label>Nama Siswa</label>
-      <input type="text" id="nama">
-      <label>Jenis Kelamin</label>
-      <input type="text" id="jk">
-      <label>Agama</label>
-      <input type="text" id="agama">
-      <label>NISN</label>
-      <input type="text" id="nisn">
-      <label>Nama Orang Tua</label>
-      <input type="text" id="ortu">
-      <label>Kelas</label>
-      <input type="text" id="kelas">
-      <label>Nomor Induk Siswa</label>
-      <input type="text" id="induk">
+      <label>Pilih Kelas</label>
+      <select id="kelas" onchange="loadSiswa()">
+        <option value="">-- Pilih Kelas --</option>
+        <option value="X">X</option>
+        <option value="XI">XI</option>
+        <option value="XII">XII</option>
+      </select>
+
+      <label>Pilih Siswa</label>
+      <select id="siswa" onchange="isiData()">
+        <option value="">-- Pilih Siswa --</option>
+      </select>
+
       <button type="button" onclick="buatSurat()">Buat Surat</button>
+      <button type="button" onclick="window.print()">Cetak Surat</button>
     </div>
 
     <div class="preview" id="preview" style="display:none;">
@@ -111,35 +146,75 @@
   </div>
 
   <script>
-    function buatSurat() {
-      const nama = document.getElementById('nama').value
-      const jk = document.getElementById('jk').value
-      const agama = document.getElementById('agama').value
-      const nisn = document.getElementById('nisn').value
-      const ortu = document.getElementById('ortu').value
+    // Contoh data siswa per kelas
+    const dataSiswa = {
+      X: [
+        { nama: "Ahmad Fauzan", jk: "Laki-laki", agama: "Islam", nisn: "1234567890", ortu: "Budi Santoso", induk: "X001" },
+        { nama: "Siti Rahma", jk: "Perempuan", agama: "Islam", nisn: "1234567891", ortu: "Dewi Lestari", induk: "X002" }
+      ],
+      XI: [
+        { nama: "Rizky Maulana", jk: "Laki-laki", agama: "Islam", nisn: "2234567890", ortu: "Tono", induk: "XI001" }
+      ],
+      XII: [
+        { nama: "Nadia Putri", jk: "Perempuan", agama: "Islam", nisn: "3234567890", ortu: "Slamet", induk: "XII001" }
+      ]
+    }
+
+    function loadSiswa() {
       const kelas = document.getElementById('kelas').value
-      const induk = document.getElementById('induk').value
+      const siswaSelect = document.getElementById('siswa')
+      siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
+      if (kelas && dataSiswa[kelas]) {
+        dataSiswa[kelas].forEach((s, i) => {
+          const opt = document.createElement('option')
+          opt.value = i
+          opt.textContent = s.nama
+          siswaSelect.appendChild(opt)
+        })
+      }
+    }
+
+    function isiData() {
+      const kelas = document.getElementById('kelas').value
+      const idx = document.getElementById('siswa').value
+      if (!kelas || idx === "") return
+      const s = dataSiswa[kelas][idx]
+      document.getElementById('preview').style.display = 'none'
+      document.getElementById('isiSurat').innerHTML = `
+        <b>Data Siswa:</b><br>
+        Nama: ${s.nama}<br>
+        Jenis Kelamin: ${s.jk}<br>
+        Agama: ${s.agama}<br>
+        NISN: ${s.nisn}<br>
+        Nama Orang Tua: ${s.ortu}<br>
+        Nomor Induk Siswa: ${s.induk}<br>
+        Kelas: ${kelas}
+      `
+    }
+
+    function buatSurat() {
+      const kelas = document.getElementById('kelas').value
+      const idx = document.getElementById('siswa').value
+      if (!kelas || idx === "") return alert("Pilih kelas dan siswa terlebih dahulu.")
+      const s = dataSiswa[kelas][idx]
       const tanggal = new Date().toLocaleDateString('id-ID')
 
       const isi = `
         Yang bertanda tangan di bawah ini Kepala SMK Al-Huda Turalak Kabupaten Ciamis<br>
         Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
-        1. Nama : ${nama}<br>
-        2. Jenis Kelamin : ${jk}<br>
-        3. Agama : ${agama}<br>
-        4. NISN : ${nisn}<br>
-        5. Nama Orang Tua : ${ortu}<br><br>
+        1. Nama : ${s.nama}<br>
+        2. Jenis Kelamin : ${s.jk}<br>
+        3. Agama : ${s.agama}<br>
+        4. NISN : ${s.nisn}<br>
+        5. Nama Orang Tua : ${s.ortu}<br><br>
         Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
         1. Nama Sekolah : SMK AL HUDA TURALAK<br>
-        2. Nomor Induk Siswa : ${induk}<br>
+        2. Nomor Induk Siswa : ${s.induk}<br>
         3. Kelas : ${kelas}<br><br>
         Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
-        Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
-      `
-      document.getElementById('isiSurat').innerHTML = isi
-      document.getElementById('tanggal').innerText = tanggal
-      document.getElementById('preview').style.display = 'block'
-    }
-  </script>
-</body>
-</html>
+    Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
+  `
+  document.getElementById('isiSurat').innerHTML = isi
+  document.getElementById('tanggal').innerText = tanggal
+  document.getElementById('preview').style.display = 'block'
+}
