@@ -3,104 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>Surat Keterangan Pindah</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    @page {
-      size: A4 portrait;
-      margin: 20mm 25mm 25mm 25mm;
-    }
-    body {
-      font-family: 'Times New Roman', serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      width: 210mm;
-      margin: auto;
-      background: white;
-      padding: 30px 40px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .kop {
-      text-align: center;
-      line-height: 1.3;
-      margin-bottom: 10px;
-      position: relative;
-    }
-    .kop img {
-      position: absolute;
-      left: 40px;
-      top: 10px;
-      width: 80px;
-      height: 80px;
-    }
-    .kop h3, .kop h2, .kop p {
-      margin: 0;
-    }
-    .kop h2 {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .kop h3 {
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .kop p {
-      font-size: 12px;
-    }
-    hr {
-      border: 2px solid #000;
-      margin-top: 10px;
-    }
-    h2.title {
-      text-align: center;
-      text-decoration: underline;
-      margin-top: 20px;
-    }
-    .form-section {
-      margin-top: 20px;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    select, input {
-      width: 100%;
-      padding: 6px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      margin-top: 20px;
-      background: #2f855a;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #276749;
-    }
-    .preview {
-      margin-top: 40px;
-      border-top: 2px solid #000;
-      padding-top: 20px;
-    }
-    @media print {
-      button, .form-section {
-        display: none;
-      }
-      body {
-        background: white;
-      }
-      .container {
-        box-shadow: none;
-      }
-    }
+    @page { size: A4 portrait; margin: 20mm 25mm 25mm 25mm; }
+    body { font-family: 'Times New Roman', serif; background: #f9f9f9; margin:0; padding:0; }
+    .container { width: 210mm; margin:auto; background:white; padding:30px 40px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    .kop { text-align:center; line-height:1.3; margin-bottom:10px; position:relative; }
+    .kop img { position:absolute; left:40px; top:10px; width:80px; height:80px; }
+    .kop h3,.kop h2,.kop p { margin:0; }
+    .kop h2 { font-size:20px; font-weight:bold; }
+    .kop h3 { font-size:18px; font-weight:bold; }
+    .kop p { font-size:12px; }
+    hr { border:2px solid #000; margin-top:10px; }
+    h2.title { text-align:center; text-decoration:underline; margin-top:20px; }
+    .form-section { margin-top:20px; }
+    label { display:block; margin-top:10px; font-weight:bold; }
+    select,input { width:100%; padding:6px; margin-top:4px; border:1px solid #ccc; border-radius:4px; }
+    button { margin-top:20px; background:#2f855a; color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+    button:hover { background:#276749; }
+    .preview { margin-top:40px; border-top:2px solid #000; padding-top:20px; }
+    @media print { button,.form-section { display:none; } body{background:white;} .container{box-shadow:none;} }
   </style>
 </head>
 <body>
@@ -146,75 +68,66 @@
   </div>
 
   <script>
-    // Contoh data siswa per kelas
-    const dataSiswa = {
-      X: [
-        { nama: "Ahmad Fauzan", jk: "Laki-laki", agama: "Islam", nisn: "1234567890", ortu: "Budi Santoso", induk: "X001" },
-        { nama: "Siti Rahma", jk: "Perempuan", agama: "Islam", nisn: "1234567891", ortu: "Dewi Lestari", induk: "X002" }
-      ],
-      XI: [
-        { nama: "Rizky Maulana", jk: "Laki-laki", agama: "Islam", nisn: "2234567890", ortu: "Tono", induk: "XI001" }
-      ],
-      XII: [
-        { nama: "Nadia Putri", jk: "Perempuan", agama: "Islam", nisn: "3234567890", ortu: "Slamet", induk: "XII001" }
-      ]
-    }
+    // koneksi Supabase
+    const supabaseUrl = "https://pgyohppycxecdnfmoqgk.supabase.co"
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY"
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-    function loadSiswa() {
+    async function loadSiswa() {
       const kelas = document.getElementById('kelas').value
+      const { data, error } = await supabase
+        .from('siswa')
+        .select('id, Nama')
+        .like('Kelas_jurusan', kelas + '%')
+
+      if (error) { console.error(error); return }
       const siswaSelect = document.getElementById('siswa')
       siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
-      if (kelas && dataSiswa[kelas]) {
-        dataSiswa[kelas].forEach((s, i) => {
-          const opt = document.createElement('option')
-          opt.value = i
-          opt.textContent = s.nama
-          siswaSelect.appendChild(opt)
-        })
-      }
+      data.forEach(s => {
+        const opt = document.createElement('option')
+        opt.value = s.id
+        opt.textContent = s.Nama
+        siswaSelect.appendChild(opt)
+      })
     }
 
-    function isiData() {
-      const kelas = document.getElementById('kelas').value
-      const idx = document.getElementById('siswa').value
-      if (!kelas || idx === "") return
-      const s = dataSiswa[kelas][idx]
-      document.getElementById('preview').style.display = 'none'
-      document.getElementById('isiSurat').innerHTML = `
-        <b>Data Siswa:</b><br>
-        Nama: ${s.nama}<br>
-        Jenis Kelamin: ${s.jk}<br>
-        Agama: ${s.agama}<br>
-        NISN: ${s.nisn}<br>
-        Nama Orang Tua: ${s.ortu}<br>
-        Nomor Induk Siswa: ${s.induk}<br>
-        Kelas: ${kelas}
-      `
+    async function isiData() {
+      const id = document.getElementById('siswa').value
+      if (!id) return
+      const { data, error } = await supabase
+        .from('siswa')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error) { console.error(error); return }
+      window.selectedSiswa = data
     }
 
     function buatSurat() {
-      const kelas = document.getElementById('kelas').value
-      const idx = document.getElementById('siswa').value
-      if (!kelas || idx === "") return alert("Pilih kelas dan siswa terlebih dahulu.")
-      const s = dataSiswa[kelas][idx]
+      const s = window.selectedSiswa
+      if (!s) return alert("Pilih siswa terlebih dahulu.")
       const tanggal = new Date().toLocaleDateString('id-ID')
 
       const isi = `
         Yang bertanda tangan di bawah ini Kepala SMK Al-Huda Turalak Kabupaten Ciamis<br>
         Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
-        1. Nama : ${s.nama}<br>
-        2. Jenis Kelamin : ${s.jk}<br>
-        3. Agama : ${s.agama}<br>
-        4. NISN : ${s.nisn}<br>
-        5. Nama Orang Tua : ${s.ortu}<br><br>
+        1. Nama : ${s.Nama}<br>
+        2. Jenis Kelamin : ${s.JK}<br>
+        3. Agama : ${s.Agama}<br>
+        4. NISN : ${s.NISN}<br>
+        5. Nama Orang Tua : ${s.Ortu}<br><br>
         Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
         1. Nama Sekolah : SMK AL HUDA TURALAK<br>
-        2. Nomor Induk Siswa : ${s.induk}<br>
-        3. Kelas : ${kelas}<br><br>
+        2. Nomor Induk Siswa : ${s.NIPD}<br>
+        3. Kelas : ${s.Kelas_jurusan}<br><br>
         Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
-    Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
-  `
-  document.getElementById('isiSurat').innerHTML = isi
-  document.getElementById('tanggal').innerText = tanggal
-  document.getElementById('preview').style.display = 'block'
-}
+        Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
+      `
+      document.getElementById('isiSurat').innerHTML = isi
+      document.getElementById('tanggal').innerText = tanggal
+      document.getElementById('preview').style.display = 'block'
+    }
+  </script>
+</body>
+</html>
