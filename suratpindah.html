@@ -65,243 +65,92 @@
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
   const supabaseUrl = 'https://pgyohppycxecdnfmoqgk.supabase.co'
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBneW9ocHB5Y3hlY2RuZm1vcWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDM2NDEsImV4cCI6MjA5NjcxOTY0MX0.prvXAPB3ljwwsgaFq0dLng4Ejt2J9ViSX9gk7a38zdY'
-
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-// ============================
-// LOAD DATA KELAS
-// ============================
-async function loadKelas() {
-  const { data, error } = await supabase
-    .from('siswa')
-    .select('Kelas_jurusan')
-    .order('Kelas_jurusan', { ascending: true })
+  let semuaSiswa = []
 
-  if (error) {
-    alert('Gagal mengambil data kelas:\n' + error.message)
-    return
-  }
-
-  const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan).filter(Boolean))]
-  const kelasSelect = document.getElementById('kelas')
-  kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>'
-  kelasSet.forEach(k => {
-    const opt = document.createElement('option')
-    opt.value = k
-    opt.textContent = k
-    kelasSelect.appendChild(opt)
-  })
-}
-
-// ============================
-// LOAD SISWA BERDASARKAN KELAS
-// ============================
-async function loadSiswa() {
-  const kelas = document.getElementById('kelas').value
-  const siswaSelect = document.getElementById('siswa')
-  siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
-  window.selectedSiswa = null
-  if (!kelas) return
-
-  const { data, error } = await supabase
-    .from('siswa')
-    .select('*')
-    .eq('Kelas_jurusan', kelas)
-    .order('Nama', { ascending: true })
-
-  if (error) {
-    alert('Gagal mengambil data siswa:\n' + error.message)
-    return
-  }
-
-  if (!data || data.length === 0) {
-    siswaSelect.innerHTML = '<option value="">-- Tidak ada siswa --</option>'
-    return
-  }
-
-  window.daftarSiswa = data
-  data.forEach((siswa, index) => {
-    const opt = document.createElement('option')
-    opt.value = index
-    opt.textContent = `${siswa.Nama} - ${siswa.NISN ?? ''}`
-    siswaSelect.appendChild(opt)
-  })
-}
-
-  // ============================
-  // LOAD SISWA BERDASARKAN KELAS
-  // ============================
-  async function loadSiswa() {
-
-    const kelas = document.getElementById('kelas').value
-
-    const siswaSelect = document.getElementById('siswa')
-
-    siswaSelect.innerHTML =
-      '<option value="">-- Pilih Siswa --</option>'
-
-    window.selectedSiswa = null
-
-    if (!kelas) {
-      return
-    }
-
-    console.log('Mengambil siswa kelas:', kelas)
-
+  // Ambil semua data siswa sekali saja
+  async function loadData() {
     const { data, error } = await supabase
       .from('siswa')
-      .select('*')
-      .eq('Kelas_Jurusan', kelas)
+      .select('Nama, NISN, JK, Alamat, "Tempat Lahir", "Tanggal Lahir", Kelas_jurusan')
       .order('Nama', { ascending: true })
 
-    console.log('Data siswa:', data)
-    console.log('Error siswa:', error)
+    if (error) { console.error(error); return }
+    semuaSiswa = data
 
-    if (error) {
-      alert('Gagal mengambil data siswa:\n' + error.message)
-      return
-    }
-
-    if (!data || data.length === 0) {
-
-      siswaSelect.innerHTML =
-        '<option value="">-- Tidak ada siswa --</option>'
-
-      return
-    }
-
-    // Simpan data siswa untuk dipakai nanti
-    window.daftarSiswa = data
-
-    data.forEach((siswa, index) => {
-
+    // isi dropdown kelas
+    const kelasSet = [...new Set(data.map(s => s.Kelas_jurusan).filter(Boolean))]
+    const kelasSelect = document.getElementById('kelas')
+    kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>'
+    kelasSet.forEach(k => {
       const opt = document.createElement('option')
+      opt.value = k
+      opt.textContent = k
+      kelasSelect.appendChild(opt)
+    })
+  }
 
-      // Gunakan index sebagai value
-      opt.value = index
+  // isi dropdown siswa sesuai kelas
+  function loadSiswa() {
+    const kelas = document.getElementById('kelas').value
+    const siswaSelect = document.getElementById('siswa')
+    siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>'
+    window.selectedSiswa = null
+    if (!kelas) return
 
-      opt.textContent =
-        `${siswa.Nama} - ${siswa.NISN ?? ''}`
+    const siswaKelas = semuaSiswa.filter(s => s.Kelas_jurusan === kelas)
+    window.daftarSiswa = siswaKelas
 
+    siswaKelas.forEach((s, i) => {
+      const opt = document.createElement('option')
+      opt.value = i
+      opt.textContent = `${s.Nama} - ${s.NISN ?? ''}`
       siswaSelect.appendChild(opt)
     })
   }
 
-
-  // ============================
-  // PILIH SISWA
-  // ============================
-  async function isiData() {
-
-    const index =
-      document.getElementById('siswa').value
-
-    if (index === '') {
-      window.selectedSiswa = null
-      return
-    }
-
-    const siswa =
-      window.daftarSiswa[index]
-
-    if (!siswa) {
-      alert('Data siswa tidak ditemukan.')
-      return
-    }
-
-    console.log('Siswa dipilih:', siswa)
-
-    window.selectedSiswa = siswa
+  // pilih siswa
+  function isiData() {
+    const index = document.getElementById('siswa').value
+    if (index === '') { window.selectedSiswa = null; return }
+    window.selectedSiswa = window.daftarSiswa[index]
   }
 
-
-  // ============================
-  // BUAT SURAT
-  // ============================
-  window.buatSurat = function() {
-
+  // buat surat
+  function buatSurat() {
     const s = window.selectedSiswa
-
-    if (!s) {
-      alert('Pilih siswa terlebih dahulu.')
-      return
-    }
-
-    const tanggal =
-      new Date().toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      })
+    if (!s) return alert("Pilih siswa terlebih dahulu.")
+    const tanggal = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})
 
     const isi = `
-
-      Yang bertanda tangan di bawah ini Kepala
-      SMK Al-Huda Turalak Kabupaten Ciamis
-      menerangkan dengan sebenarnya bahwa:
-
-      <br><br>
-
-      1. Nama : ${s.Nama ?? '-'}<br>
-
-      2. Jenis Kelamin : ${s.JK ?? '-'}<br>
-
-      3. NISN : ${s.NISN ?? '-'}<br>
-
-      4. Alamat : ${s.Alamat ?? '-'}<br>
-
-      5. Tempat, Tanggal Lahir :
-      ${s['Tempat Lahir'] ?? '-'},
-      ${s['Tanggal Lahir'] ?? '-'}<br>
-
-      <br>
-
-      Adalah benar nama tersebut di atas
-      tercatat sebagai siswa pada:
-
-      <br><br>
-
-      1. Nama Sekolah :
-      SMK AL HUDA TURALAK<br>
-
-      2. Kelas :
-      ${s.Kelas_Jurusan ?? '-'}<br>
-
-      <br>
-
-      Berdasarkan permohonan orang tua/wali
-      dan keinginan yang bersangkutan telah
-      mengajukan pindah sekolah dengan alasan
-      permintaan orang tua.
-
-      <br><br>
-
-      Demikian Surat Keterangan Pindah ini
-      dibuat dengan sebenar-benarnya dan dapat
-      dipergunakan sebagaimana mestinya.
+      Yang bertanda tangan di bawah ini Kepala SMK Al-Huda Turalak Kabupaten Ciamis<br>
+      Dengan ini menerangkan dengan sebenarnya bahwa:<br><br>
+      1. Nama : ${s.Nama}<br>
+      2. Jenis Kelamin : ${s.JK}<br>
+      3. NISN : ${s.NISN}<br>
+      4. Alamat : ${s.Alamat}<br>
+      5. Tempat, Tanggal Lahir : ${s['Tempat Lahir']}, ${s['Tanggal Lahir']}<br><br>
+      Adalah benar nama tersebut di atas tercatat sebagai siswa pada:<br>
+      1. Nama Sekolah : SMK AL HUDA TURALAK<br>
+      2. Kelas : ${s.Kelas_jurusan}<br><br>
+      Berdasarkan permohonan orang tua/wali dan keinginan yang bersangkutan telah mengajukan pindah sekolah dengan alasan permintaan orang tua.<br><br>
+      Demikian Surat Keterangan Pindah ini dibuat dengan sebenar-benarnya dan dapat dipergunakan sebagaimana mestinya.
     `
-
     document.getElementById('isiSurat').innerHTML = isi
-
-    document.getElementById('tanggal').innerText =
-      tanggal
-
-    document.getElementById('preview').style.display =
-      'block'
+    document.getElementById('tanggal').innerText = tanggal
+    document.getElementById('preview').style.display = 'block'
   }
 
-
-  // Supaya bisa dipanggil oleh HTML
+  // expose ke window
   window.loadSiswa = loadSiswa
   window.isiData = isiData
+  window.buatSurat = buatSurat
 
-
-  // ============================
-  // JALANKAN SAAT HALAMAN DIBUKA
-  // ============================
-  loadKelas()
-
+  // jalankan saat halaman load
+  loadData()
 </script>
+</body>
+</html>
